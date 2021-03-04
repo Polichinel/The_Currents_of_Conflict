@@ -1,6 +1,8 @@
 import os
 import numpy as np
 import pandas as pd
+import pymc3 as pm
+import matplotlib.pyplot as plt
 
 def get_views_coord():
 
@@ -143,4 +145,50 @@ def sample_conflict_timeline(df, train_id, test_id, C=5, N=3, demean = False, se
 
 
 
-        
+def get_hyper_priors(plot = True, η_beta_s = 0.5, ℓ_beta_s = 0.8, ℓ_alpha_s = 2, α_alpha_s = 5, α_beta_s = 1, η_beta_l = 0.5, ℓ_beta_l = 4, ℓ_alpha_l = 5, σ_beta = 5):
+
+    """Get hyper prior dict, an potntially plot"""
+
+
+    #hyper_priors_dict
+    hps = {}
+
+    # short term priors
+    hps['η_beta_s'] =  η_beta_s
+    hps['ℓ_beta_s'] = ℓ_beta_s
+    hps['ℓ_alpha_s'] = ℓ_alpha_s
+
+    hps['α_alpha_s'] = α_alpha_s #  for Rational Quadratic Kernel. Ignore for Quad or Matern
+    hps['α_beta_s'] = α_beta_s # for Rational Quadratic Kernel. Ignore for Quad or Matern
+
+    # long term priors
+    hps['η_beta_l'] = η_beta_l
+    hps['ℓ_beta_l'] = ℓ_beta_l
+    hps['ℓ_alpha_l'] = ℓ_alpha_l
+
+    # noise prior
+    hps['σ_beta'] = σ_beta
+
+    if plot == True:
+
+        # plot:
+        grid = np.linspace(0,64,1000)
+            
+        priors = [
+            ('η_prior_s', pm.HalfCauchy.dist(beta=hps['η_beta_s'])),
+            ('ℓ_prior_s', pm.Gamma.dist(alpha=hps['ℓ_alpha_s'] , beta=hps['ℓ_beta_s'])),
+            ('α_prior_s', pm.Gamma.dist(alpha=hps['α_alpha_s'], beta= hps['α_beta_s'])),
+            ('η_prior_l', pm.HalfCauchy.dist(beta=hps['η_beta_l'])),
+            ('ℓ_prior_l', pm.Gamma.dist(alpha=hps['ℓ_alpha_l'] , beta=hps['ℓ_beta_l'])),
+            ('σ', pm.HalfCauchy.dist(beta=hps['σ_beta']))]
+
+        plt.figure(figsize= [15,5])
+        plt.title('hyper-priors')
+
+        for i, prior in enumerate(priors):
+            plt.plot(grid, np.exp(prior[1].logp(grid).eval()), label = prior[0])
+
+        plt.legend()
+        plt.show()
+
+    return(hps)
