@@ -145,7 +145,7 @@ def sample_conflict_timeline(df, train_id, test_id, C=5, N=3, demean = False, se
 
 
 
-def get_hyper_priors(plot = True, η_beta_s = 0.5, ℓ_beta_s = 0.8, ℓ_alpha_s = 2, α_alpha_s = 5, α_beta_s = 1, η_beta_l = 0.5, ℓ_beta_l = 4, ℓ_alpha_l = 5, σ_beta = 5):
+def get_hyper_priors(plot = True, η_beta_s = 0.5, ℓ_beta_s = 0.8, ℓ_alpha_s = 2, α_alpha_s = 5, α_beta_s = 1, η_beta_l = 4, ℓ_beta_l = 1, ℓ_alpha_l = 36, σ_beta = 5):
 
     """Get hyper prior dict, an potntially plot"""
 
