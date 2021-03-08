@@ -101,7 +101,7 @@ def test_val_train(df, info = True, test_time = False):
         return(train_id, test_id)
 
 
-
+# Right now this only does sb. Need to also do ns, os and all (just ged_best...)
 def sample_conflict_timeline(df, train_id, test_id, C=5, N=3, demean = False, seed = 42, get_index = False):
 
     """ This function samples N time-lines contining c>=C conflicts. 
