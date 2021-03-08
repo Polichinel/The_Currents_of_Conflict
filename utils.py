@@ -4,6 +4,7 @@ import pandas as pd
 import pymc3 as pm
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.metrics import mean_squared_error
 
 from IPython.display import clear_output
 
@@ -312,4 +313,74 @@ def plot_predictions(df_merged):
     plt.vlines(df_merged['X'].max()-36, -1, 8, linestyles='dashed', color = 'red', alpha = 0.5)
 
     plt.show()
+
+
+
+def get_mse(df_merged, train_id, test_id):
+
+    """This funciton takes a merged df, the train ids and val/test ids. 
+    The df should be a merger between the original df and the new-df from 'predict'.
+    The funciton outputs a df containing the in/out mse for the gp, gp_s and gp_l.
+    The df contains both mean and std mse.
+    The fuction also outpust a dict with the raw (various) mse score for each timeline. 
+    The dict is meant for plotting is that is interesting at some point."""
+
+    mse_dict = {}
+
+    mse_dict['mse_train_list'] = []
+    mse_dict['mse_s_train_list'] = []
+    mse_dict['mse_l_train_list'] = []
+
+    mse_dict['mse_test_list'] = []
+    mse_dict['mse_s_test_list'] = []
+    mse_dict['mse_l_test_list'] = []
+
+    # iterate over time lines - we would like a distribution of mse
+    for i in df_merged['pg_id'].unique():
+
+        y_true_train = df_merged[(df_merged['id'].isin(train_id)) & (df_merged['pg_id'] == i)]['y']
+        pred_train = df_merged[(df_merged['id'].isin(train_id)) & (df_merged['pg_id'] == i)]['mu']
+        pred_s_train = df_merged[(df_merged['id'].isin(train_id)) & (df_merged['pg_id'] == i)]['mu_s']
+        pred_l_train = df_merged[(df_merged['id'].isin(train_id)) & (df_merged['pg_id'] == i)]['mu_l']
+
+        mse_dict['mse_train_list'].append(mean_squared_error(y_true_train, pred_train))
+        mse_dict['mse_s_train_list'].append(mean_squared_error(y_true_train, pred_s_train))
+        mse_dict['mse_l_train_list'].append(mean_squared_error(y_true_train, pred_l_train))
+
+        y_true_test = df_merged[(df_merged['id'].isin(test_id)) & (df_merged['pg_id'] == i)]['y']
+        pred_test = df_merged[(df_merged['id'].isin(test_id)) & (df_merged['pg_id'] == i)]['mu']
+        pred_s_test = df_merged[(df_merged['id'].isin(test_id)) & (df_merged['pg_id'] == i)]['mu_s']
+        pred_l_test = df_merged[(df_merged['id'].isin(test_id)) & (df_merged['pg_id'] == i)]['mu_l']
+
+        mse_dict['mse_test_list'].append(mean_squared_error(y_true_test, pred_test))
+        mse_dict['mse_s_test_list'].append(mean_squared_error(y_true_test, pred_s_test))
+        mse_dict['mse_l_test_list'].append(mean_squared_error(y_true_test, pred_l_test))
+
+
+    mean_mse_train = np.array(mse_dict['mse_train_list']).mean()
+    mean_mse_s_train = np.array(mse_dict['mse_s_train_list']).mean()
+    mean_mse_l_train = np.array(mse_dict['mse_l_train_list']).mean()
+
+    sd_mse_train = np.array(mse_dict['mse_train_list']).std()
+    sd_mse_s_train = np.array(mse_dict['mse_s_train_list']).std()
+    sd_mse_l_train = np.array(mse_dict['mse_l_train_list']).std()
+
+    mean_mse_test = np.array(mse_dict['mse_test_list']).mean()
+    mean_mse_s_test = np.array(mse_dict['mse_s_test_list']).mean()
+    mean_mse_l_test = np.array(mse_dict['mse_l_test_list']).mean() 
+
+    sd_mse_test = np.array(mse_dict['mse_test_list']).std()
+    sd_mse_s_test = np.array(mse_dict['mse_s_test_list']).std()
+    sd_mse_l_test = np.array(mse_dict['mse_l_test_list']).std()
+
+    mse_resutls_df = pd.DataFrame({
+            "Gps": ["Full", "Short", "long"],
+            "MSE insample (mean)": [mean_mse_train, mean_mse_s_train, mean_mse_l_train],
+            "MSE insample (sd)": [sd_mse_train, sd_mse_s_train, sd_mse_l_train],
+            "MSE outsample (mean)": [mean_mse_test, mean_mse_s_test, mean_mse_l_test],
+            "MSE outsample (sd)": [sd_mse_test, sd_mse_s_test, sd_mse_l_test],
+            })
+
+    return(mse_resutls_df, mse_dict)
+
 
