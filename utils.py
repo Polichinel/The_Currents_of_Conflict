@@ -106,33 +106,46 @@ def test_val_train(df, info = True, test_time = False):
 
 
 # Right now this only does sb. Need to also do ns, os and all (just ged_best...)
-def sample_conflict_timeline(df, train_id, test_id, C=5, N=3, demean = False, seed = 42, get_index = False):
+def sample_conflict_timeline(conf_type, df, train_id, test_id, C=5, N=3, demean = False, seed = 42, get_index = False):
 
     """ This function samples N time-lines contining c>=C conflicts. 
     If N == None, it gets all time-lines with c>C conflicts.
     As default it will try to get the val_id. Error will come if it does not exits"""
 
+    # Set the dummy corrospoding to the conflcit type
+    if conf_type == 'ged_best_sb':
+        dummy = 'ged_dummy_sb'
+
+    elif conf_type == 'ged_best_ns':
+        dummy = 'ged_dummy_ns'
+
+    elif conf_type == 'ged_best_os':
+        dummy = 'ged_dummy_os'
+
+    elif conf_type == 'ged_best':
+        dummy = 'ged_dummy'
+
     # sort the df - just in case
     df_sorted = df.sort_values('month_id')
 
     # groupby gids and get total events
-    df_sb_total_events = df.groupby(['pg_id']).sum()['ged_dummy_sb'].reset_index().rename(columns = {'ged_dummy_sb':'ged_total_events_sb'})
+    df_sb_total_events = df.groupby(['pg_id']).sum()[dummy].reset_index().rename(columns = {dummy:'ged_total_events'})
     
     if N == None:
-        sample_gids = df_sb_total_events[df_sb_total_events['ged_total_events_sb'] >= C]['pg_id'].values
+        sample_gids = df_sb_total_events[df_sb_total_events['ged_total_events'] >= C]['pg_id'].values
         N = len(sample_gids)
 
     else:
         # sample one gid from all gids from timeline with c>C events
-        sample_gids = df_sb_total_events[df_sb_total_events['ged_total_events_sb'] > C]['pg_id'].sample(N, random_state = seed).values
+        sample_gids = df_sb_total_events[df_sb_total_events['ged_total_events'] > C]['pg_id'].sample(N, random_state = seed).values
 
     train_mask = df_sorted['pg_id'].isin(sample_gids) & df_sorted['id'].isin(train_id) 
     test_mask = df_sorted['pg_id'].isin(sample_gids) & df_sorted['id'].isin(test_id)
     
-    y = np.log(df_sorted[train_mask]['ged_best_sb'] +1).values.reshape(-1,N)
+    y = np.log(df_sorted[train_mask][conf_type] +1).values.reshape(-1,N)
     X = df_sorted[train_mask]['month_id'].values.reshape(-1,N)
 
-    y_test = np.log(df_sorted[test_mask]['ged_best_sb'] +1).values.reshape(-1,N)
+    y_test = np.log(df_sorted[test_mask][conf_type] +1).values.reshape(-1,N)
     X_test = df_sorted[test_mask]['month_id'].values.reshape(-1,N)
 
     if demean == True:
@@ -205,7 +218,7 @@ def get_hyper_priors(plot = True, η_beta_s = 0.5, ℓ_beta_s = 0.8, ℓ_alpha_s
 
 
 
-def predict(df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, demean = False):
+def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, demean = False):
 
     # demaen not implemented corretly here.    
 
@@ -217,7 +230,7 @@ def predict(df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, demean = False):
     I a full run set C = 0."""
 
     # get timelines and make df
-    X, y, X_test, y_test, idx, idx_test = sample_conflict_timeline(df = df, train_id = train_id, test_id = test_id, C = C, N = None, get_index= True)
+    X, y, X_test, y_test, idx, idx_test = sample_conflict_timeline(conf_type = conf_type, df = df, train_id = train_id, test_id = test_id, C = C, N = None, get_index= True)
 
     df_train = pd.DataFrame({'id' : idx.reshape(-1,), 'X' : X.reshape(-1,), 'y' : y.reshape(-1,)})
     df_train['train'] = 1
