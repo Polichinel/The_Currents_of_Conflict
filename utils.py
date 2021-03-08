@@ -5,7 +5,11 @@ import pymc3 as pm
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import mean_squared_error
-
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import mean_squared_error
+from sklearn import metrics
 from IPython.display import clear_output
 
 
@@ -201,7 +205,7 @@ def get_hyper_priors(plot = True, η_beta_s = 0.5, ℓ_beta_s = 0.8, ℓ_alpha_s
 
 
 
-def predict(df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C=100, demean = False):
+def predict(df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, demean = False):
 
     # demaen not implemented corretly here.    
 
@@ -383,4 +387,45 @@ def get_mse(df_merged, train_id, test_id):
 
     return(mse_resutls_df, mse_dict)
 
+
+
+def get_metrics(df_merged, train_id, test_id):
+
+    """A function that takes the merged df.
+    The df must now include both data from 'predict',
+    and the devrived slope, acc ans mass.
+    The function uses a simple rf classifier to test the temporal features.
+    Very simple classifier so results are only indicative"""
+
+    X_train = df_merged[df_merged['id'].isin(train_id)][['mu_l', 'mu_l_slope', 'mu_l_acc', 'mu_l_mass']] 
+    y_train = (df_merged[df_merged['id'].isin(train_id)]['y'] > 0) * 1
+
+    X_test = df_merged[df_merged['id'].isin(test_id)][['mu_l', 'mu_l_slope', 'mu_l_acc', 'mu_l_mass']] 
+    y_test = (df_merged[df_merged['id'].isin(test_id)]['y'] > 0) * 1
+
+    # totally vanilla - just indicative
+    model = RandomForestClassifier(n_estimators=100, max_depth=4, min_samples_split=8, random_state=42)
+    #model = AdaBoostClassifier(n_estimators=100, random_state=42)
+    #model = LogisticRegression()
+
+    model.fit(X_train, y_train)
+
+    y_train_pred = model.predict_proba(X_train)[:,1]
+    y_test_pred = model.predict_proba(X_test)[:,1]
+
+    AUC_train = metrics.roc_auc_score(y_train, y_train_pred)
+    AP_train = metrics.average_precision_score(y_train, y_train_pred)
+    BS_train = metrics.brier_score_loss(y_train, y_train_pred)
+
+    AUC_test = metrics.roc_auc_score(y_test, y_test_pred)
+    AP_test = metrics.average_precision_score(y_test, y_test_pred)
+    BS_test = metrics.brier_score_loss(y_test, y_test_pred)
+
+    df_results =  pd.DataFrame({
+            "Metrics": ["AUC", "AP", "BS"],
+            "Train": [AUC_train, AP_train, BS_train],
+            "Test": [AUC_test, AP_test, BS_test]
+        })
+
+    return(df_results)
 
