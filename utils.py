@@ -3,6 +3,10 @@ import numpy as np
 import pandas as pd
 import pymc3 as pm
 import matplotlib.pyplot as plt
+import seaborn as sns
+
+from IPython.display import clear_output
+
 
 def get_views_coord():
 
@@ -192,3 +196,120 @@ def get_hyper_priors(plot = True, η_beta_s = 0.5, ℓ_beta_s = 0.8, ℓ_alpha_s
         plt.show()
 
     return(hps)
+
+
+
+
+def predict(df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C=100, demean = False):
+
+    # demaen not implemented corretly here.    
+
+    """This function takes the mp, gps and σ for a two-trend implimentation.
+    it also needs the df, the train ids and the val/test ids.
+    It outpust a pandas daframe with X, y (train/test) along w/ mu and var.
+    We get mu and var over all X and for both full gp, long trend gp and short trand gp.
+    C denotes the number of minimum conlflict in timelines and is just for testing.
+    I a full run set C = 0."""
+
+    # get timelines and make df
+    X, y, X_test, y_test, idx, idx_test = sample_conflict_timeline(df = df, train_id = train_id, test_id = test_id, C = C, N = None, get_index= True)
+
+    df_train = pd.DataFrame({'id' : idx.reshape(-1,), 'X' : X.reshape(-1,), 'y' : y.reshape(-1,)})
+    df_train['train'] = 1
+    
+    df_test = pd.DataFrame({'id' : idx_test.reshape(-1,), 'X' : X_test.reshape(-1,), 'y' : y_test.reshape(-1,)})
+    df_test['train'] = 0
+
+    df_new = pd.concat([df_train, df_test])
+
+    X_new = df_new['X'].unique()[:,None]
+
+    # make lists
+    mu_list = []
+    mu_s_list = []
+    mu_l_list = []
+    var_list = []
+    var_s_list = []
+    var_l_list = []
+
+    # Loop gp predict over time lines
+    for i in range(y.shape[1]):
+
+        print(f'Time-line {i+1}/{y.shape[1]} in the works...')
+        clear_output(wait=True)
+
+        mu, var = gp.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X[:,i][:,None], 'y' : y[:,i], 'noise' : σ}, diag=True)
+        mu_s, var_s = gp_s.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X[:,i][:,None], 'y' : y[:,i], 'noise' : σ}, diag=True)
+        mu_l, var_l = gp_l.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X[:,i][:,None], 'y' : y[:,i], 'noise' : σ}, diag=True)
+
+        mu_list.append(mu)
+        mu_s_list.append(mu_s)
+        mu_l_list.append(mu_l)
+        var_list.append(var)
+        var_s_list.append(var_s)
+        var_l_list.append(var_l)
+
+    df_new['mu'] = np.array(mu_list).flatten('F') # this flatten seems to work
+    df_new['mu_s'] = np.array(mu_s_list).flatten('F') # this flatten seems to work
+    df_new['mu_l'] = np.array(mu_l_list).flatten('F') # this flatten seems to work
+    df_new['var'] = np.array(var_list).flatten('F') # this flatten seems to work
+    df_new['var_s'] = np.array(var_s_list).flatten('F') # this flatten seems to work
+    df_new['var_l'] = np.array(var_l_list).flatten('F') # this flatten seems to work
+
+    return(df_new)
+
+
+
+def plot_predictions(df_merged):
+
+    """This funcitons takes df containint the original data and the predictied data.
+    Specfically, the df should be a merger between the original df and the new_df outputted by 'predict' """
+
+    time_lines = df_merged['pg_id'].unique()
+    
+    fig = plt.figure(figsize=(20, 8))
+    colors = sns.color_palette("hls", len(time_lines))
+
+    print(f'Number of time lines plotted: {len(time_lines)}')
+
+    for i,j in enumerate(time_lines):
+
+        X = df_merged[df_merged['pg_id'] == j]['X']
+        y = df_merged[df_merged['pg_id'] == j]['y']
+
+        X_train = df_merged[(df_merged['pg_id'] == j) & (df_merged['train'] == 1)]['X']
+        X_test = df_merged[(df_merged['pg_id'] == j) & (df_merged['train'] == 0)]['X']
+        y_train = df_merged[(df_merged['pg_id'] == j) & (df_merged['train'] == 1)]['y']
+        y_test = df_merged[(df_merged['pg_id'] == j) & (df_merged['train'] == 0)]['y']
+
+        mu = df_merged[df_merged['pg_id'] == j]['mu']
+        mu_s = df_merged[df_merged['pg_id'] == j]['mu_s']
+        mu_l = df_merged[df_merged['pg_id'] == j]['mu_l']
+        sd = np.sqrt(df_merged[df_merged['pg_id'] == j]['var'])
+        sd_s = np.sqrt(df_merged[df_merged['pg_id'] == j]['var_s'])
+        sd_l = np.sqrt(df_merged[df_merged['pg_id'] == j]['var_l'])
+
+        plt.plot(X, mu,'-', color = colors[i])
+        plt.plot(X, mu_s,'-', color = colors[i])
+        plt.plot(X, mu_l,'-', color = colors[i])
+
+        plt.plot(X_train, y_train,'o', color = colors[i])
+        plt.plot(X_test, y_test,'x', color = colors[i])
+
+        plt.plot(X, mu + 2 * sd, "-", lw=1, color=colors[i], alpha=0.5)
+        plt.plot(X, mu - 2 * sd, "-", lw=1, color=colors[i], alpha=0.5)
+        plt.fill_between(X, mu - 2 * sd, mu + 2 * sd, color=colors[i], alpha=0.2)
+
+        plt.plot(X, mu_s + 2 * sd_s, "-", lw=1, color=colors[i], alpha=0.5)
+        plt.plot(X, mu_s - 2 * sd_s, "-", lw=1, color=colors[i], alpha=0.5)
+        plt.fill_between(X, mu_s - 2 * sd_s, mu_s + 2 * sd_s, color=colors[i], alpha=0.2)
+
+        plt.plot(X, mu_l + 2 * sd_l, "-", lw=1, color=colors[i], alpha=0.5)
+        plt.plot(X, mu_l - 2 * sd_l, "-", lw=1, color=colors[i], alpha=0.5)
+        plt.fill_between(X, mu_l - 2 * sd_l, mu_l + 2 * sd_l, color=colors[i], alpha=0.2)
+
+
+    plt.vlines(df_merged['X'].max()-36, -1, 8, linestyles='dashed', color = 'red', alpha = 0.5)
+
+    plt.show()
+
