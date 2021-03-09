@@ -78,7 +78,8 @@ for C_est in C_est_list:
             start_time = time.time()
 
             # get df:
-            path = '/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/'
+            # path = '/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/'
+            path = '/home/projects/ku_00017/data/raw/currents' 
             file_name = 'ViEWS_coord.pkl'
             df = get_views_coord(path = path, file_name = file_name)
 
@@ -219,9 +220,8 @@ for C_est in C_est_list:
 
 
 # %%
-file_name = "/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/eksperiments_dict.pkl"
-output = open(file_name, 'wb')
+#new_file_name = "/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/eksperiments_dict.pkl"
+new_file_name = '/home/projects/ku_00017/data/generated/currents'
+output = open(new_file_name, 'wb')
 pickle.dump(eksperiments_dict, output)
 output.close()
-
-
