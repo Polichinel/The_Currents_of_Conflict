@@ -214,9 +214,9 @@ for C_est in C_est_list:
             eksperiments_dict[pre_script_df_results] = df_results
 
             # to only get one for testing
-            break
-        break
-    break
+            #break
+        #break
+    #break
 
 
 # %%
