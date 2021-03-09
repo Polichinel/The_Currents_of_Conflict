@@ -79,7 +79,7 @@ for C_est in C_est_list:
 
             # get df:
             # path = '/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/'
-            path = '/home/projects/ku_00017/data/genereted/currents' 
+            path = '/home/projects/ku_00017/data/generated/currents' 
             file_name = 'ViEWS_coord.pkl'
             df = get_views_coord(path = path, file_name = file_name)
 
