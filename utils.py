@@ -250,7 +250,7 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, demean 
     # Loop gp predict over time lines
     for i in range(y.shape[1]):
 
-        print(f'Time-line {i+1}/{y.shape[1]} in the works...')
+        print(f'Time-line {i+1}/{y.shape[1]} in the works (prediction)...')
         clear_output(wait=True)
 
         mu, var = gp.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X[:,i][:,None], 'y' : y[:,i], 'noise' : σ}, diag=True)
