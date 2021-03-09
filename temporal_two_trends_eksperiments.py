@@ -221,7 +221,7 @@ for C_est in C_est_list:
 
 # %%
 #new_file_name = "/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/eksperiments_dict.pkl"
-new_file_name = '/home/projects/ku_00017/data/generated/currents'
+new_file_name = '/home/projects/ku_00017/data/generated/currents/eksperiments_dict.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(eksperiments_dict, output)
 output.close()
