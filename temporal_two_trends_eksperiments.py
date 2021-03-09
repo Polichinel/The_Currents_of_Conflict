@@ -71,7 +71,7 @@ for C_est in C_est_list:
     for conf_type in conf_type_list:
         for s_kernel in s_kernel_list:
 
-            print(f'{C_est}_{conf_type}_{s_kernel}: model {count}/{total_models}\n')
+            print(f"{C_est}_{conf_type}_{s_kernel}: model {count}/{total_models}\n")
 
             # Test cases:
             #C_est = C_est_list[0]
@@ -221,9 +221,9 @@ for C_est in C_est_list:
             count += 1 
 
             # to only get one for testing
-            #break
-        #break
-    #break
+            break
+        break
+    break
 
 
 # %%
