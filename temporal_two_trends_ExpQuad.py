@@ -28,21 +28,22 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import mean_squared_error
 from sklearn import metrics
 
+theano.gof.cc.get_module_cache().clear()
 
 # %%
 # dict for the dfs/dicts holding the results
 two_trend_ExpQuad_dict = {}
 
 # minimum number of conf in timeslines predicted. C = 0 for full run
-# C_pred = 32 
-C_pred = 0
+C_pred = 32 
+# C_pred = 0
 
 N=None # if you want to sample a subset of the time lines drawn given c_est/C_pred
 seed = 42 # the random seed used if you set N != None
 dem = False # not sure this is in use..
 
 # minimum number of conf in timeslines used to est hyper parameters
-C_est = 32
+C_est = 100 #32
 
 # conflict type. Som might need lower c_est than 100 to work
 conf_type = 'ged_best_sb' #['ged_best_sb', 'ged_best_ns', 'ged_best_os', 'ged_best']
@@ -59,8 +60,8 @@ print(f"{C_est}_{conf_type}_{s_kernel}\n")
 start_time = time.time()
 
 # get df:
-# path = '/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/'
-path = '/home/projects/ku_00017/data/generated/currents' 
+path = '/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/'
+# path = '/home/projects/ku_00017/data/generated/currents' 
 file_name = 'ViEWS_coord.pkl'
 df = get_views_coord(path = path, file_name = file_name)
 
@@ -129,14 +130,17 @@ with pm.Model() as model:
     for i in range(y.shape[1]):
 
         # Theano shared variables: maybe helps with the memory leak
-        X_shared = theano.shared(X[:,i][:,None], borrow=True)
-        y_shared = theano.shared(y[:,i], borrow=True)
+        X_shared = theano.shared(X[:,i][:,None]) #, borrow=True)
+        y_shared = theano.shared(y[:,i]) #, borrow=True)
 
         print(f'Time-line {i+1}/{y.shape[1]} in the works (estimation)...') 
         clear_output(wait=True)
 
         y_ = gp.marginal_likelihood(f'y_{i}', X=X_shared, y=y_shared, noise= σ)
-                    
+
+        theano.gof.cc.get_module_cache().clear() # it is a test...
+    
+        # with shared you might give it the same y?            
     mp = pm.find_MAP()
 
 # get alpha if you used the Rational Quadratic kernel for short term
@@ -197,8 +201,8 @@ two_trend_ExpQuad_dict[pre_script_df_results] = df_results
             
 
 # %%
-# new_file_name = "/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/two_trend_ExpQuad_dict.pkl"
-new_file_name = '/home/projects/ku_00017/data/generated/currents/two_trend_ExpQuad_dict.pkl'
+new_file_name = "/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/two_trend_ExpQuad_dict.pkl"
+# new_file_name = '/home/projects/ku_00017/data/generated/currents/two_trend_ExpQuad_dict.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(two_trend_ExpQuad_dict, output)
 output.close()

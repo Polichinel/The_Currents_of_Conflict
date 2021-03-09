@@ -10,6 +10,7 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import mean_squared_error
 from sklearn import metrics
+import theano
 from IPython.display import clear_output
 
 
@@ -147,7 +148,7 @@ def sample_conflict_timeline(conf_type, df, train_id, test_id, C=5, N=3, demean 
 
     if demean == True:
 
-        y = y - y.mean(axis = 0) # you can't demean testset right?
+        y = y - y.mean(axis = 0) # you can't demean testset
 
     print(f'\nX: {X.shape}, y: {y.shape} \nX (val/test): {X_test.shape}, y (val/test): {y_test.shape} \n')
 
@@ -247,15 +248,25 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, demean 
     var_s_list = []
     var_l_list = []
 
+    X_shared = theano.shared(X[:,0][:,None]) #, borrow=True) # test
+    y_shared = theano.shared(y[:,0]) #, borrow=True) # test
+
     # Loop gp predict over time lines
     for i in range(y.shape[1]):
 
         print(f'Time-line {i+1}/{y.shape[1]} in the works (prediction)...')
-        clear_output(wait=True)
+        clear_output(wait=True)        
 
-        mu, var = gp.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X[:,i][:,None], 'y' : y[:,i], 'noise' : σ}, diag=True)
-        mu_s, var_s = gp_s.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X[:,i][:,None], 'y' : y[:,i], 'noise' : σ}, diag=True)
-        mu_l, var_l = gp_l.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X[:,i][:,None], 'y' : y[:,i], 'noise' : σ}, diag=True)
+        X_shared.set_value(X[:,i][:,None]) # test 
+        y_shared.set_value(y[:,i]) #test
+
+        mu, var = gp.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X_shared, 'y' : y_shared, 'noise' : σ}, diag=True)
+        mu_s, var_s = gp_s.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X_shared, 'y' : y_shared, 'noise' : σ}, diag=True)
+        mu_l, var_l = gp_l.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X_shared, 'y' : y_shared, 'noise' : σ}, diag=True)
+
+        # mu, var = gp.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X[:,i][:,None], 'y' : y[:,i], 'noise' : σ}, diag=True)
+        # mu_s, var_s = gp_s.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X[:,i][:,None], 'y' : y[:,i], 'noise' : σ}, diag=True)
+        # mu_l, var_l = gp_l.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X[:,i][:,None], 'y' : y[:,i], 'noise' : σ}, diag=True)
 
         mu_list.append(mu)
         mu_s_list.append(mu_s)
@@ -263,6 +274,8 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, demean 
         var_list.append(var)
         var_s_list.append(var_s)
         var_l_list.append(var_l)
+
+        theano.gof.cc.get_module_cache().clear() # it is a test...
 
     df_new['mu'] = np.array(mu_list).flatten('F') # this flatten seems to work
     df_new['mu_s'] = np.array(mu_s_list).flatten('F') # this flatten seems to work
