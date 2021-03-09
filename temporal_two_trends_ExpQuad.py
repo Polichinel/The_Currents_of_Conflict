@@ -28,6 +28,10 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import mean_squared_error
 from sklearn import metrics
 
+import warnings
+
+warnings.filterwarnings("ignore", category=UserWarning)
+
 theano.gof.cc.get_module_cache().clear()
 
 # %%
