@@ -59,8 +59,8 @@ print(f"{C_est}_{conf_type}_{s_kernel}\n")
 start_time = time.time()
 
 # get df:
-path = '/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/'
-# path = '/home/projects/ku_00017/data/generated/currents' 
+# path = '/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/'
+path = '/home/projects/ku_00017/data/generated/currents' 
 file_name = 'ViEWS_coord.pkl'
 df = get_views_coord(path = path, file_name = file_name)
 
@@ -197,8 +197,8 @@ two_trend_ExpQuad_dict[pre_script_df_results] = df_results
             
 
 # %%
-new_file_name = "/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/two_trend_ExpQuad_dict.pkl"
-#new_file_name = '/home/projects/ku_00017/data/generated/currents/two_trend_ExpQuad_dict.pkl'
+# new_file_name = "/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/two_trend_ExpQuad_dict.pkl"
+new_file_name = '/home/projects/ku_00017/data/generated/currents/two_trend_ExpQuad_dict.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(two_trend_ExpQuad_dict, output)
 output.close()
