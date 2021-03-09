@@ -53,13 +53,13 @@ seed = 42 # the random seed used if you set N != None
 dem = False # not sure this is in use..
 
 # minimum number of conf in timeslines used to est hyper parameters
-C_est_list = [16, 32]
+C_est_list = [32, 64]
 
 # conflict type. Som might need lower c_est than 100 to work
 conf_type_list = ['ged_best_sb', 'ged_best_ns', 'ged_best_os', 'ged_best']
 
 # short term kernel
-s_kernel_list = ['ExpQuad', 'RatQuad', 'Matern32', 'Matern52']
+s_kernel_list = ['ExpQuad', 'RatQuad', 'Matern32'] #, 'Matern52']
 
 
 # %%
@@ -221,9 +221,9 @@ for C_est in C_est_list:
             count += 1 
 
             # to only get one for testing
-            break
-        break
-    break
+            #break
+        #break
+    #break
 
 
 # %%
