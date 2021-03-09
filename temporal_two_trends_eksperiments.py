@@ -78,7 +78,9 @@ for C_est in C_est_list:
             start_time = time.time()
 
             # get df:
-            df = get_views_coord()
+            path = '/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/'
+            file_name = 'ViEWS_coord.pkl'
+            df = get_views_coord(path = path, file_name = file_name)
 
             # get train and validation id:
             train_id, val_id = test_val_train(df)
@@ -211,9 +213,9 @@ for C_est in C_est_list:
             eksperiments_dict[pre_script_df_results] = df_results
 
             # to only get one for testing
-            # break
-        # break
-    # break
+            break
+        break
+    break
 
 
 # %%

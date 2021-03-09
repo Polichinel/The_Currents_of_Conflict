@@ -13,12 +13,9 @@ from sklearn import metrics
 from IPython.display import clear_output
 
 
-def get_views_coord():
+def get_views_coord(path, file_name):
 
     """Get views data with coords and return it as a pandas dataframe"""
-
-    path = '/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/'
-    file_name = 'ViEWS_coord.pkl'
 
     file_path = os.path.join(path, file_name)
     views_coord = pd.read_pickle(file_path)
