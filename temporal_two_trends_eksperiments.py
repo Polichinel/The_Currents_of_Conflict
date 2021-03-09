@@ -45,15 +45,15 @@ from sklearn import metrics
 eksperiments_dict = {}
 
 # minimum number of conf in timeslines predicted. C = 0 for full run
-C_pred = 32 
-#C_pred = 0
+#C_pred = 32 
+C_pred = 0
 
 N=None # if you want to sample a subset of the time lines drawn given c_est/C_pred
 seed = 42 # the random seed used if you set N != None
 dem = False # not sure this is in use..
 
 # minimum number of conf in timeslines used to est hyper parameters
-C_est_list = [64, 32, 16]
+C_est_list = [16, 32]
 
 # conflict type. Som might need lower c_est than 100 to work
 conf_type_list = ['ged_best_sb', 'ged_best_ns', 'ged_best_os', 'ged_best']
@@ -63,11 +63,15 @@ s_kernel_list = ['ExpQuad', 'RatQuad', 'Matern32', 'Matern52']
 
 
 # %%
+total_models = len(C_est_list) * len(conf_type_list) * len(s_kernel_list)
+
+count = 1
+
 for C_est in C_est_list:
     for conf_type in conf_type_list:
         for s_kernel in s_kernel_list:
 
-            print(f'{C_est}_{conf_type}_{s_kernel}\n')
+            print(f'{C_est}_{conf_type}_{s_kernel}: model {count}/{total_models}\n')
 
             # Test cases:
             #C_est = C_est_list[0]
@@ -212,11 +216,14 @@ for C_est in C_est_list:
             eksperiments_dict[pre_script_mse_resutls_df] = mse_resutls_df
             eksperiments_dict[pre_script_mse_dict] = mse_dict
             eksperiments_dict[pre_script_df_results] = df_results
+            
+            # update count 
+            count += 1 
 
             # to only get one for testing
-            break
-        break
-    break
+            #break
+        #break
+    #break
 
 
 # %%
