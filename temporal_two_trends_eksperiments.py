@@ -79,7 +79,7 @@ for C_est in C_est_list:
 
             # get df:
             # path = '/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/'
-            path = '/home/projects/ku_00017/data/raw/currents' 
+            path = '/home/projects/ku_00017/data/genereted/currents' 
             file_name = 'ViEWS_coord.pkl'
             df = get_views_coord(path = path, file_name = file_name)
 
@@ -214,9 +214,9 @@ for C_est in C_est_list:
             eksperiments_dict[pre_script_df_results] = df_results
 
             # to only get one for testing
-            #break
-        #break
-    #break
+            break
+        break
+    break
 
 
 # %%
