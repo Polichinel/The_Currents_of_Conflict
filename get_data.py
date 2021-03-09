@@ -14,7 +14,8 @@ import pickle
 print('Beginning file download ViEWS...')
 
 url_views = 'https://views.pcr.uu.se/download/datasets/ucdp_views_priogrid_month.csv.zip'
-path_views = '/home/polichinel/Documents/Articles/conflict_prediction/data/computerome_test/ucdp_views_priogrid_month.csv.zip'
+#path_views = '/home/polichinel/Documents/Articles/conflict_prediction/data/computerome_test/ucdp_views_priogrid_month.csv.zip'
+path_views = '/home/projects/ku_00017/data/raw/currents/ucdp_views_priogrid_month.csv.zip'
 urllib.request.urlretrieve(url_views, path_views)
 df_views = pd.read_csv(path_views)
 
@@ -22,8 +23,8 @@ df_views = pd.read_csv(path_views)
 print('Beginning file download PRIO...')
 
 url_prio = 'http://file.prio.no/ReplicationData/PRIO-GRID/priogrid_shapefiles.zip'
-
-path_prio = '/home/polichinel/Documents/Articles/conflict_prediction/data/computerome_test/priogrid_shapefiles.zip'
+#path_prio = '/home/polichinel/Documents/Articles/conflict_prediction/data/computerome_test/priogrid_shapefiles.zip'
+path_prio = '/home/projects/ku_00017/data/raw/currents/priogrid_shapefiles.zip'
 urllib.request.urlretrieve(url_prio, path_prio)
 df_prio = gpd.read_file('zip://' + path_prio)
 prio_coord = pd.DataFrame(df_prio[['gid', 'xcoord', 'ycoord']].rename(columns={'gid': 'pg_id'}))
@@ -36,7 +37,8 @@ new_df['ged_best'] = new_df['ged_best_sb'] + new_df['ged_best_ns'] + new_df['ged
 new_df['ged_dummy'] = ((new_df['ged_dummy_sb'] + new_df['ged_dummy_ns'] + new_df['ged_dummy_os']) > 0) *1
 
 # Save pickle
-file_name = "/home/polichinel/Documents/Articles/conflict_prediction/data/computerome_test/ViEWS_coord.pkl"
+# file_name = "/home/polichinel/Documents/Articles/conflict_prediction/data/computerome_test/ViEWS_coord.pkl"
+file_name = "/home/projects/ku_00017/data/generated/currents/ViEWS_coord.pkl"
 output = open(file_name, 'wb')
 pickle.dump(new_df, output)
 output.close()
