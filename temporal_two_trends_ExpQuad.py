@@ -41,7 +41,8 @@ two_trend_ExpQuad_dict = {}
 # minimum number of conf in timeslines predicted. C = 0 for full run
 #C_pred = 32 
 #C_pred = 1 # you will infere flatlines to mu = 0 and some var using vetorization afterwards. or
-C_pred = 100#0
+#C_pred = 0
+C_pred = 1
 
 N=None # if you want to sample a subset of the time lines drawn given c_est/C_pred
 seed = 42 # the random seed used if you set N != None
