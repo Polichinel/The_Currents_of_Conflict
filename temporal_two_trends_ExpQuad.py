@@ -41,14 +41,14 @@ two_trend_ExpQuad_dict = {}
 # minimum number of conf in timeslines predicted. C = 0 for full run
 #C_pred = 32 
 #C_pred = 1 # you will infere flatlines to mu = 0 and some var using vetorization afterwards. or
-C_pred = 0
+C_pred = 100#0
 
 N=None # if you want to sample a subset of the time lines drawn given c_est/C_pred
 seed = 42 # the random seed used if you set N != None
 dem = False # not sure this is in use..
 
 # minimum number of conf in timeslines used to est hyper parameters
-C_est = 16
+C_est = 100#16
 
 # conflict type. Som might need lower c_est than 100 to work
 conf_type = 'ged_best_sb' #['ged_best_sb', 'ged_best_ns', 'ged_best_os', 'ged_best']
@@ -218,3 +218,5 @@ final_run_time = final_time - start_time
 string = f'Run for {final_run_time/60:.3} minutes'
 print(string)
 
+
+# plot_predictions(df_merged)
