@@ -385,7 +385,7 @@ def get_mse(df_merged, train_id, test_id):
 
     mse_resutls_df = pd.DataFrame({
             "Gps": ["Full", "Short", "long"],
-            "MSE insample (mean)": [mse_train, mean_mse_s_train, mean_mse_l_train],
+            "MSE insample (mean)": [mse_train, mse_s_train, mse_l_train],
             "MSE outsample (mean)": [mse_test, mse_s_test, mse_l_test],
             })
 
