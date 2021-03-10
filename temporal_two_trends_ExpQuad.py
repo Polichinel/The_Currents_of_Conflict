@@ -173,35 +173,29 @@ df_merged = pd.merge(df_new, df[['id', 'pg_id','year','gwcode', 'xcoord', 'ycoor
 # plot_predictions(df_merged = df_merged)
 
 # getting mse results:
-mse_resutls_df, mse_dict = get_mse(df_merged = df_merged, train_id = train_id, test_id = val_id)
+print('Getting MSE')
+mse_resutls_df = get_mse(df_merged = df_merged, train_id = train_id, test_id = val_id)
 
 # Creating devrivatives:
+print('Creating devrivatives')
 df_merged.sort_values(['pg_id', 'X'], inplace= True)
 df_merged['mu_l_slope'] = df_merged.groupby('pg_id')['mu_l'].transform(np.gradient)
 df_merged['mu_l_acc'] = df_merged.groupby('pg_id')['mu_l_slope'].transform(np.gradient)
 df_merged['mu_l_mass'] = df_merged.groupby('pg_id')['mu_l'].transform(np.cumsum)
             
 # Get classification results
+print('Getting classifcation results')
 df_results = get_metrics(df_merged = df_merged, train_id = train_id, test_id = val_id)
 
-
-# end timer
-final_time = time.time()
-final_run_time = final_time - start_time
-
-string = f'Run for {final_run_time/60:.3} minutes'
-print(string)
-
 # "filing" names
+print('Saving..')
 pre_script_map_df = f'{C_est}_{conf_type}_{s_kernel}_map_df'
 pre_script_mse_resutls_df = f'{C_est}_{conf_type}_{s_kernel}_mse_results_df'
-pre_script_mse_dict = f'{C_est}_{conf_type}_{s_kernel}_mse_dict'
 pre_script_df_results = f'{C_est}_{conf_type}_{s_kernel}_df_results'
 
 # Save in the eksperiments_dict
 two_trend_ExpQuad_dict[pre_script_map_df] = map_df
 two_trend_ExpQuad_dict[pre_script_mse_resutls_df] = mse_resutls_df
-two_trend_ExpQuad_dict[pre_script_mse_dict] = mse_dict
 two_trend_ExpQuad_dict[pre_script_df_results] = df_results
             
 
@@ -210,3 +204,10 @@ new_file_name = '/home/projects/ku_00017/data/generated/currents/two_trend_ExpQu
 output = open(new_file_name, 'wb')
 pickle.dump(two_trend_ExpQuad_dict, output)
 output.close()
+
+# end timer
+final_time = time.time()
+final_run_time = final_time - start_time
+string = f'Run for {final_run_time/60:.3} minutes'
+print(string)
+
