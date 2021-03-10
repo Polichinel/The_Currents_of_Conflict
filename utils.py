@@ -257,7 +257,7 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, demean 
         print(f'Time-line {i+1}/{y.shape[1]} in the works (prediction)...')
         clear_output(wait=True)        
 
-        if y[:,i].sum() > 0:
+        #if y[:,i].sum() > 0:
 
         #X_shared.set_value(X[:,i][:,None]) # test 
         #y_shared.set_value(y[:,i]) #test
@@ -266,19 +266,19 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, demean 
         #mu_s, var_s = gp_s.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X_shared, 'y' : y_shared, 'noise' : σ}, diag=True)
         #mu_l, var_l = gp_l.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X_shared, 'y' : y_shared, 'noise' : σ}, diag=True)
 
-            mu, var = gp.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X[:,i][:,None], 'y' : y[:,i], 'noise' : σ}, diag=True)
-            mu_s, var_s = gp_s.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X[:,i][:,None], 'y' : y[:,i], 'noise' : σ}, diag=True)
-            mu_l, var_l = gp_l.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X[:,i][:,None], 'y' : y[:,i], 'noise' : σ}, diag=True)
+        mu, var = gp.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X[:,i][:,None], 'y' : y[:,i], 'noise' : σ}, diag=True)
+        mu_s, var_s = gp_s.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X[:,i][:,None], 'y' : y[:,i], 'noise' : σ}, diag=True)
+        mu_l, var_l = gp_l.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X[:,i][:,None], 'y' : y[:,i], 'noise' : σ}, diag=True)
 
         # Don't spend resources on flatlines. Get them respective mean var_ later
-        else:
+        #else:
 
-            mu = np.zeros(X_new.shape[0])
-            var = np.zeros(X_new.shape[0])
-            mu_s = np.zeros(X_new.shape[0])
-            var_s = np.zeros(X_new.shape[0])
-            mu_l = np.zeros(X_new.shape[0])
-            var_l = np.zeros(X_new.shape[0])
+        #    mu = np.zeros(X_new.shape[0])
+        #    var = np.zeros(X_new.shape[0])
+        #    mu_s = np.zeros(X_new.shape[0])
+        #    var_s = np.zeros(X_new.shape[0])
+        #    mu_l = np.zeros(X_new.shape[0])
+        #    var_l = np.zeros(X_new.shape[0])
 
 
 
