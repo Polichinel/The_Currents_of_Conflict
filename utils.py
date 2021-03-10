@@ -408,7 +408,7 @@ def get_metrics(df_merged, train_id, test_id):
     y_test = (df_merged[df_merged['id'].isin(test_id)]['y'] > 0) * 1
 
     # totally vanilla - just indicative
-    model = RandomForestClassifier(n_estimators=100, max_depth=4, min_samples_split=8, random_state=42)
+    model = RandomForestClassifier(n_estimators=10, max_depth=4, min_samples_split=8, random_state=42, n_jobs= -1)
     #model = AdaBoostClassifier(n_estimators=100, random_state=42)
     #model = LogisticRegression()
 
