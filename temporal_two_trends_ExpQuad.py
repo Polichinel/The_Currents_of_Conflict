@@ -199,11 +199,18 @@ two_trend_ExpQuad_dict[pre_script_mse_resutls_df] = mse_resutls_df
 two_trend_ExpQuad_dict[pre_script_df_results] = df_results
             
 
-#new_file_name = "/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/two_trend_ExpQuad_dict.pkl"
-new_file_name = '/home/projects/ku_00017/data/generated/currents/two_trend_ExpQuad_dict.pkl'
-output = open(new_file_name, 'wb')
+#new_file_name1 = "/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/two_trend_ExpQuad_dict.pkl"
+new_file_name1 = '/home/projects/ku_00017/data/generated/currents/two_trend_ExpQuad_dict.pkl'
+output = open(new_file_name1, 'wb')
 pickle.dump(two_trend_ExpQuad_dict, output)
 output.close()
+
+#new_file_name2 = "/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/df_merged.pkl"
+new_file_name2 = '/home/projects/ku_00017/data/generated/currents/df_merged.pkl'
+output = open(new_file_name2, 'wb')
+pickle.dump(df_merged, output)
+output.close()
+
 
 # end timer
 final_time = time.time()
