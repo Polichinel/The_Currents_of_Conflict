@@ -42,7 +42,7 @@ two_trend_ExpQuad_dict = {}
 #C_pred = 32 
 #C_pred = 1 # you will infere flatlines to mu = 0 and some var using vetorization afterwards. or
 #C_pred = 0
-C_pred = 16
+C_pred = 8
 
 N=None # if you want to sample a subset of the time lines drawn given c_est/C_pred
 seed = 42 # the random seed used if you set N != None
@@ -60,7 +60,7 @@ s_kernel = 'ExpQuad' #['ExpQuad', 'RatQuad', 'Matern32'] #, 'Matern52']
 
 # %%
 
-print(f"{C_est}_{conf_type}_{s_kernel}\n")
+print(f"{C_est}_{C_pred}_{conf_type}_{s_kernel}\n")
 
 # Start timer
 start_time = time.time()
