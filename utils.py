@@ -362,11 +362,19 @@ def get_metrics(df_merged, train_id, test_id):
     The function uses a simple rf classifier to test the temporal features.
     Very simple classifier so results are only indicative"""
 
-    X_train = df_merged[df_merged['id'].isin(train_id)][['mu_l', 'mu_l_slope', 'mu_l_acc', 'mu_l_mass']] 
+#    X_train = df_merged[df_merged['id'].isin(train_id)][['mu_l', 'mu_l_slope', 'mu_l_acc', 'mu_l_mass']] 
+#    y_train = (df_merged[df_merged['id'].isin(train_id)]['y'] > 0) * 1
+
+#    X_test = df_merged[df_merged['id'].isin(test_id)][['mu_l', 'mu_l_slope', 'mu_l_acc', 'mu_l_mass']] 
+#    y_test = (df_merged[df_merged['id'].isin(test_id)]['y'] > 0) * 1
+
+    X_train = df_merged[df_merged['id'].isin(train_id)][['mu', 'mu_slope', 'mu_acc', 'mu_mass','mu_s', 'mu_s_slope', 'mu_s_acc', 'mu_s_mass','mu_l', 'mu_l_slope', 'mu_l_acc', 'mu_l_mass']] 
     y_train = (df_merged[df_merged['id'].isin(train_id)]['y'] > 0) * 1
 
-    X_test = df_merged[df_merged['id'].isin(test_id)][['mu_l', 'mu_l_slope', 'mu_l_acc', 'mu_l_mass']] 
+    X_test = df_merged[df_merged['id'].isin(test_id)][[ 'mu', 'mu_slope', 'mu_acc', 'mu_mass','mu_s', 'mu_s_slope', 'mu_s_acc', 'mu_s_mass','mu_l', 'mu_l_slope', 'mu_l_acc', 'mu_l_mass']] 
     y_test = (df_merged[df_merged['id'].isin(test_id)]['y'] > 0) * 1
+
+
 
     # totally vanilla - just indicative
     model = RandomForestClassifier(n_estimators=64, max_depth=6, min_samples_split=8, random_state=42, n_jobs= -1)
