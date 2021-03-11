@@ -190,7 +190,7 @@ two_trend_ExpQuad_dict[pre_script_df] = df_merged
             
 
 #new_file_name = "/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/two_trend_ExpQuad_dict.pkl"
-new_file_name = '/home/projects/ku_00017/data/generated/currents/two_trend_ExpQuad_dict.pkl'
+new_file_name = '/home/projects/ku_00017/data/generated/currents/two_trend_ExpQuad_sb_dict.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(two_trend_ExpQuad_dict, output)
 output.close()
