@@ -32,10 +32,10 @@ from sklearn import metrics
 two_trend_ExpQuad_dict = {}
 
 # minimum number of conf in timeslines predicted. C = 0 for full run
-C_pred = 1 # 100
+C_pred = 100 #1 # 100
 
 # minimum number of conf in timeslines used to est hyper parameters
-C_est = 32 #100
+C_est = 100 #32 #100
 
 # conflict type. Som might need lower c_est than 100 to work
 conf_type = 'ged_best_sb' #['ged_best_sb', 'ged_best_ns', 'ged_best_os', 'ged_best']
@@ -168,26 +168,26 @@ print('Saving..')
 pre_script_map_df = f'{C_est}_{C_pred}_{conf_type}_{s_kernel}_map_df'
 pre_script_mse_resutls_df = f'{C_est}_{C_pred}_{conf_type}_{s_kernel}_mse_results_df'
 pre_script_df_results = f'{C_est}_{C_pred}_{conf_type}_{s_kernel}_df_results'
-
-# Jsut make on dict with every thing...
+pre_script_df = f'{C_est}_{C_pred}_{conf_type}_{s_kernel}_df_merged'
 
 # Save in the eksperiments_dict
 two_trend_ExpQuad_dict[pre_script_map_df] = map_df
 two_trend_ExpQuad_dict[pre_script_mse_resutls_df] = mse_resutls_df
 two_trend_ExpQuad_dict[pre_script_df_results] = df_results
+two_trend_ExpQuad_dict[pre_script_df] = df_merged
             
 
-#new_file_name1 = "/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/two_trend_ExpQuad_dict.pkl"
-new_file_name1 = '/home/projects/ku_00017/data/generated/currents/two_trend_ExpQuad_dict.pkl'
+#new_file_name = "/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/two_trend_ExpQuad_dict.pkl"
+new_file_name = '/home/projects/ku_00017/data/generated/currents/two_trend_ExpQuad_dict.pkl'
 output = open(new_file_name1, 'wb')
 pickle.dump(two_trend_ExpQuad_dict, output)
 output.close()
 
 #new_file_name2 = "/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/df_merged.pkl"
-new_file_name2 = '/home/projects/ku_00017/data/generated/currents/df_merged.pkl'
-output = open(new_file_name2, 'wb')
-pickle.dump(df_merged, output)
-output.close()
+#new_file_name2 = '/home/projects/ku_00017/data/generated/currents/df_merged.pkl'
+#output = open(new_file_name2, 'wb')
+#pickle.dump(df_merged, output)
+#output.close()
 
 # end timer
 final_time = time.time()
