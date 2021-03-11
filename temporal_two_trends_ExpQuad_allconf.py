@@ -35,10 +35,10 @@ from sklearn import metrics
 two_trend_ExpQuad_dict = {}
 
 # minimum number of conf in timeslines predicted. C = 0 for full run
-C_pred = 100 #1 # 100
+C_pred = 1 # 100
 
 # minimum number of conf in timeslines used to est hyper parameters
-C_est = 100 #32 #100
+C_est = 32 #100
 
 # conflict type. Som might need lower c_est than 100 to work
 conf_type = 'ged_best' #['ged_best_sb', 'ged_best_ns', 'ged_best_os', 'ged_best']
