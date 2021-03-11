@@ -35,7 +35,7 @@ two_trend_ExpQuad_dict = {}
 C_pred = 4 # 100
 
 # minimum number of conf in timeslines used to est hyper parameters
-C_est = 100#16
+C_est = 16 #100
 
 # conflict type. Som might need lower c_est than 100 to work
 conf_type = 'ged_best_sb' #['ged_best_sb', 'ged_best_ns', 'ged_best_os', 'ged_best']
