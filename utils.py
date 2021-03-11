@@ -103,14 +103,12 @@ def test_val_train(df, info = True, test_time = False):
         return(train_id, test_id)
 
 
-# Right now this only does sb. Need to also do ns, os and all (just ged_best...)
-def sample_conflict_timeline(conf_type, df, train_id, test_id, C=5, N=3, demean = False, seed = 42, get_index = False):
+def sample_conflict_timeline(conf_type, df, train_id, test_id, C=5):
 
     """ This function samples N time-lines contining c>=C conflicts. 
-    If N == None, it gets all time-lines with c>C conflicts.
     As default it will try to get the val_id. Error will come if it does not exits"""
 
-    # Set the dummy corrospoding to the conflcit type
+    #Set the dummy corrospoding to the conflcit type
     if conf_type == 'ged_best_sb':
         dummy = 'ged_dummy_sb'
 
@@ -124,44 +122,14 @@ def sample_conflict_timeline(conf_type, df, train_id, test_id, C=5, N=3, demean 
         dummy = 'ged_dummy'
 
     # sort the df - just in case
-    df_sorted = df.sort_values('month_id')
+    df_sorted = df.sort_values(['pg_id', 'month_id'])
 
     # groupby gids and get total events
     df_sb_total_events = df.groupby(['pg_id']).sum()[dummy].reset_index().rename(columns = {dummy:'ged_total_events'})
     
-    if N == None:
-        sample_gids = df_sb_total_events[df_sb_total_events['ged_total_events'] >= C]['pg_id'].values
-        N = len(sample_gids)
+    sample_pr_id = df_sb_total_events[df_sb_total_events['ged_total_events'] >= C]['pg_id'].unique()
 
-    else:
-        # sample one gid from all gids from timeline with c>C events
-        sample_gids = df_sb_total_events[df_sb_total_events['ged_total_events'] > C]['pg_id'].sample(N, random_state = seed).values
-
-    train_mask = df_sorted['pg_id'].isin(sample_gids) & df_sorted['id'].isin(train_id) 
-    test_mask = df_sorted['pg_id'].isin(sample_gids) & df_sorted['id'].isin(test_id)
-    
-    y = np.log(df_sorted[train_mask][conf_type] +1).values.reshape(-1,N)
-    X = df_sorted[train_mask]['month_id'].values.reshape(-1,N)
-
-    y_test = np.log(df_sorted[test_mask][conf_type] +1).values.reshape(-1,N)
-    X_test = df_sorted[test_mask]['month_id'].values.reshape(-1,N)
-
-    if demean == True:
-
-        y = y - y.mean(axis = 0) # you can't demean testset
-
-    print(f'\nX: {X.shape}, y: {y.shape} \nX (val/test): {X_test.shape}, y (val/test): {y_test.shape} \n')
-
-    if get_index == False:
-        return(X, y, X_test, y_test)
-
-
-    if get_index == True:
-
-        idx = df_sorted[train_mask]['id'].values.reshape(-1,N)
-        idx_test = df_sorted[test_mask]['id'].values.reshape(-1,N)
-
-        return(X, y, X_test, y_test, idx, idx_test)
+    return(sample_pr_id)
 
 
 
@@ -218,8 +186,6 @@ def get_hyper_priors(plot = True, η_beta_s = 0.5, ℓ_beta_s = 0.8, ℓ_alpha_s
 
 def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, demean = False):
 
-    # demaen not implemented corretly here.    
-
     """This function takes the mp, gps and σ for a two-trend implimentation.
     it also needs the df, the train ids and the val/test ids.
     It outpust a pandas daframe with X, y (train/test) along w/ mu and var.
@@ -227,18 +193,11 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, demean 
     C denotes the number of minimum conlflict in timelines and is just for testing.
     I a full run set C = 0."""
 
-    # get timelines and make df
-    X, y, X_test, y_test, idx, idx_test = sample_conflict_timeline(conf_type = conf_type, df = df, train_id = train_id, test_id = test_id, C = C, N = None, get_index= True)
+    new_id = np.append(train_id, test_id)
+    df_sorted = df.sort_values(['pg_id', 'month_id'])
+    X_new = df_sorted[df_sorted['id'].isin(new_id) ]['month_id'].unique()[:,None] # all X
 
-    df_train = pd.DataFrame({'id' : idx.reshape(-1,), 'X' : X.reshape(-1,), 'y' : y.reshape(-1,)})
-    df_train['train'] = 1
-    
-    df_test = pd.DataFrame({'id' : idx_test.reshape(-1,), 'X' : X_test.reshape(-1,), 'y' : y_test.reshape(-1,)})
-    df_test['train'] = 0
-
-    df_new = pd.concat([df_train, df_test])
-
-    X_new = df_new['X'].unique()[:,None]
+    sample_pg_id = sample_conflict_timeline(conf_type = conf_type, df = df, train_id = train_id, test_id = test_id, C = C)
 
     # make lists
     mu_list = []
@@ -247,40 +206,27 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, demean 
     var_list = []
     var_s_list = []
     var_l_list = []
-
-    #X_shared = theano.shared(X[:,0][:,None]) #, borrow=True) # test
-    #y_shared = theano.shared(y[:,0]) #, borrow=True) # test
+    X_new_list = []
+    y_new_list = []
+    idx_list = []
+    pg_idx_list = []
+    train_list = []
 
     # Loop gp predict over time lines
-    for i in range(y.shape[1]):
+    for i, j in enumerate(sample_pg_id):
 
-        print(f'Time-line {i+1}/{y.shape[1]} in the works (prediction)...')
+        print(f'Time-line {i+1}/{sample_pg_id.shape[0]} in the works (prediction)...')
         clear_output(wait=True)        
 
-        #if y[:,i].sum() > 0:
+        idx = df_sorted[(df_sorted['id'].isin(new_id)) & (df_sorted['pg_id'] == j)]['id'].values
+        y_new = np.log(df_sorted[(df_sorted['id'].isin(new_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values
 
-        #X_shared.set_value(X[:,i][:,None]) # test 
-        #y_shared.set_value(y[:,i]) #test
+        X = df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None]
+        y = np.log(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values
 
-        #mu, var = gp.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X_shared, 'y' : y_shared, 'noise' : σ}, diag=True)
-        #mu_s, var_s = gp_s.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X_shared, 'y' : y_shared, 'noise' : σ}, diag=True)
-        #mu_l, var_l = gp_l.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X_shared, 'y' : y_shared, 'noise' : σ}, diag=True)
-
-        mu, var = gp.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X[:,i][:,None], 'y' : y[:,i], 'noise' : σ}, diag=True)
-        mu_s, var_s = gp_s.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X[:,i][:,None], 'y' : y[:,i], 'noise' : σ}, diag=True)
-        mu_l, var_l = gp_l.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X[:,i][:,None], 'y' : y[:,i], 'noise' : σ}, diag=True)
-
-        # Don't spend resources on flatlines. Get them respective mean var_ later
-        #else:
-
-        #    mu = np.zeros(X_new.shape[0])
-        #    var = np.zeros(X_new.shape[0])
-        #    mu_s = np.zeros(X_new.shape[0])
-        #    var_s = np.zeros(X_new.shape[0])
-        #    mu_l = np.zeros(X_new.shape[0])
-        #    var_l = np.zeros(X_new.shape[0])
-
-
+        mu, var = gp.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X, 'y' : y, 'noise' : σ}, diag=True)
+        mu_s, var_s = gp_s.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X, 'y' : y, 'noise' : σ}, diag=True)
+        mu_l, var_l = gp_l.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X, 'y' : y, 'noise' : σ}, diag=True)
 
         mu_list.append(mu)
         mu_s_list.append(mu_s)
@@ -288,15 +234,30 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, demean 
         var_list.append(var)
         var_s_list.append(var_s)
         var_l_list.append(var_l)
+        X_new_list.append(X_new)
+        y_new_list.append(y_new)
+        idx_list.append(idx)
+        pg_idx_list.append([j] * mu.shape[0])
+        train_list.append(np.array([1] * y.shape[0] + [0] * (mu.shape[0] - y.shape[0]))) # dummy for training...
 
-        # theano.gof.cc.get_module_cache().clear() # it is a test...
+    mu_col = np.array(mu_list).reshape(-1,) 
+    mu_s_col = np.array(mu_s_list).reshape(-1,) 
+    mu_l_col = np.array(mu_l_list).reshape(-1,)
+    var_col = np.array(var_list).reshape(-1,) 
+    var_s_col = np.array(var_s_list).reshape(-1,) 
+    var_l_col = np.array(var_l_list).reshape(-1,) 
+    X_new_col = np.array(X_new_list).reshape(-1,) 
+    y_new_col = np.array(y_new_list).reshape(-1,)     
+    idx_col = np.array(idx_list).reshape(-1,)    
+    pg_idx_col = np.array(pg_idx_list).reshape(-1,)
+    train_col =  np.array(train_list).reshape(-1,)
 
-    df_new['mu'] = np.array(mu_list).flatten('F') # this flatten seems to work
-    df_new['mu_s'] = np.array(mu_s_list).flatten('F') # this flatten seems to work
-    df_new['mu_l'] = np.array(mu_l_list).flatten('F') # this flatten seems to work
-    df_new['var'] = np.array(var_list).flatten('F') # this flatten seems to work
-    df_new['var_s'] = np.array(var_s_list).flatten('F') # this flatten seems to work
-    df_new['var_l'] = np.array(var_l_list).flatten('F') # this flatten seems to work
+    df_new = pd.DataFrame({
+                            'mu': mu_col, 'mu_s' : mu_s_col, 'mu_l' : mu_l_col,
+                            'var' : var_col, 'var_s' : var_s_col, 'var_l' : var_l_col, 
+                            'X' : X_new_col, 'y' : y_new_col , 
+                            'id' : idx_col, 'pg_id' : pg_idx_col, 'train' : train_col
+                            })
 
     return(df_new)
 

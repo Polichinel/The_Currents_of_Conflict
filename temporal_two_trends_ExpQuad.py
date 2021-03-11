@@ -1,4 +1,4 @@
-# %%
+
 import os
 import numpy as np
 import pandas as pd
@@ -20,7 +20,6 @@ from utils import get_mse
 from utils import get_metrics
 
 import pymc3 as pm
-#import theano
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import AdaBoostClassifier
@@ -28,25 +27,12 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import mean_squared_error
 from sklearn import metrics
 
-import warnings
 
-#warnings.filterwarnings("ignore", category=UserWarning)
-
-#theano.gof.cc.get_module_cache().clear()
-
-# %%
 # dict for the dfs/dicts holding the results
 two_trend_ExpQuad_dict = {}
 
 # minimum number of conf in timeslines predicted. C = 0 for full run
-#C_pred = 32 
-#C_pred = 1 # you will infere flatlines to mu = 0 and some var using vetorization afterwards. or
-#C_pred = 0
-C_pred = 4
-
-N=None # if you want to sample a subset of the time lines drawn given c_est/C_pred
-seed = 42 # the random seed used if you set N != None
-dem = False # not sure this is in use..
+C_pred = 4 # 100
 
 # minimum number of conf in timeslines used to est hyper parameters
 C_est = 100#16
@@ -56,11 +42,6 @@ conf_type = 'ged_best_sb' #['ged_best_sb', 'ged_best_ns', 'ged_best_os', 'ged_be
 
 # short term kernel
 s_kernel = 'ExpQuad' #['ExpQuad', 'RatQuad', 'Matern32'] #, 'Matern52']
-
-
-# %%
-
-print(f"{C_est}_{C_pred}_{conf_type}_{s_kernel}\n")
 
 # Start timer
 start_time = time.time()
@@ -74,11 +55,8 @@ df = get_views_coord(path = path, file_name = file_name)
 # get train and validation id:
 train_id, val_id = test_val_train(df)
 
-# get train (train + val) and test id:
-# train_id, test_id = test_val_train(df, test_time = True)
+print(f"{C_est}_{C_pred}_{conf_type}_{s_kernel}\n")
 
-# if you want to plot the hyper priors
-# hyper_priors_dict = get_hyper_priors(plot = True)
 
 # Constuction the gps and getting the map
 hps = get_hyper_priors(plot = False)
@@ -127,25 +105,23 @@ with pm.Model() as model:
     σ = pm.HalfCauchy("σ", beta=hps['σ_beta'])
 
     # sample and split X,y ---------------------------------------------  
-    X, y, _, _ = sample_conflict_timeline(conf_type = conf_type, df = df, train_id = train_id, test_id = val_id, C = C_est, N = None)
+    sample_pr_id = sample_conflict_timeline(conf_type = conf_type, df = df, train_id = train_id, test_id = val_id, C = C_est)
 
     # Full GP ----------------------------------------------------------
     gp = gp_s + gp_l
 
+    df_sorted = df.sort_values(['pg_id', 'month_id'])
+
     # sample:
-    for i in range(y.shape[1]):
+    for i, j in enumerate(sample_pr_id):
 
-        # Theano shared variables: maybe helps with the memory leak
-        #X_shared = theano.shared(X[:,i][:,None]) #, borrow=True)
-        #y_shared = theano.shared(y[:,i]) #, borrow=True)
-
-        print(f'Time-line {i+1}/{y.shape[1]} in the works (estimation)...') 
+        print(f'Time-line {i+1}/{sample_pr_id.shape[0]} in the works (estimation)...') 
         clear_output(wait=True)
 
-        y_ = gp.marginal_likelihood(f'y_{i}', X=X[:,i][:,None], y=y[:,i], noise= σ)
-        # y_ = gp.marginal_likelihood(f'y_{i}', X=X_shared, y=y_shared, noise= σ)
+        X = df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None]
+        y = np.log( df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values
 
-        # theano.gof.cc.get_module_cache().clear() # it is a test...
+        y_ = gp.marginal_likelihood(f'y_{i}', X=X, y=y, noise= σ)
     
     mp = pm.find_MAP()
 
@@ -165,13 +141,12 @@ else:
         "Value at MAP": [float(mp["ℓ_s"]), float(mp["η_s"]), float(mp["ℓ_l"]), float(mp["η_l"]), float(mp["σ"])]
         }) 
 
+
 # Getting the predictions and merging with original df:
 df_new = predict(conf_type = conf_type, df = df, train_id = train_id, test_id = val_id, mp = mp, gp = gp, gp_s = gp_s, gp_l = gp_l, σ=σ, C=C_pred)
 
-df_merged = pd.merge(df_new, df[['id', 'pg_id','year','gwcode', 'xcoord', 'ycoord','ged_best_sb','ged_best_ns', 'ged_best_os', 'ged_best']], how = 'left', on = 'id') 
+df_merged = pd.merge(df_new, df[['id', 'pg_id','year','gwcode', 'xcoord', 'ycoord','ged_best_sb','ged_best_ns', 'ged_best_os', 'ged_best']], how = 'left', on = ['id', 'pg_id'])
 
-# plot sanity check, but not if you have many time lines
-# plot_predictions(df_merged = df_merged)
 
 # getting mse results:
 print('Getting MSE')
@@ -211,7 +186,6 @@ new_file_name2 = '/home/projects/ku_00017/data/generated/currents/df_merged.pkl'
 output = open(new_file_name2, 'wb')
 pickle.dump(df_merged, output)
 output.close()
-
 
 # end timer
 final_time = time.time()
