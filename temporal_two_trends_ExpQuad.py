@@ -27,9 +27,9 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import mean_squared_error
 from sklearn import metrics
 
-import theano
-import warnings
-warnings.filterwarnings("ignore", category=UserWarning)
+#import theano
+#import warnings
+#warnings.filterwarnings("ignore", category=UserWarning)
 
 # dict for the dfs/dicts holding the results
 two_trend_ExpQuad_dict = {}
@@ -121,8 +121,8 @@ with pm.Model() as model:
         print(f'Time-line {i+1}/{sample_pr_id.shape[0]} in the works (estimation)...') 
         clear_output(wait=True)
 
-        X = theano.shared(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None])
-        y = theano.shared(np.log( df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values)
+        X = df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None]
+        y = np.log( df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values
 
         y_ = gp.marginal_likelihood(f'y_{i}', X=X, y=y, noise= σ)
     
