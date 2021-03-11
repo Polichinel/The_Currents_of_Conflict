@@ -35,7 +35,7 @@ two_trend_ExpQuad_dict = {}
 C_pred = 4 # 100
 
 # minimum number of conf in timeslines used to est hyper parameters
-C_est = 16 #100
+C_est = 8 #100
 
 # conflict type. Som might need lower c_est than 100 to work
 conf_type = 'ged_best_sb' #['ged_best_sb', 'ged_best_ns', 'ged_best_os', 'ged_best']
@@ -165,9 +165,11 @@ df_results = get_metrics(df_merged = df_merged, train_id = train_id, test_id = v
 
 # "filing" names
 print('Saving..')
-pre_script_map_df = f'{C_est}_{conf_type}_{s_kernel}_map_df'
-pre_script_mse_resutls_df = f'{C_est}_{conf_type}_{s_kernel}_mse_results_df'
-pre_script_df_results = f'{C_est}_{conf_type}_{s_kernel}_df_results'
+pre_script_map_df = f'{C_est}_{C_pred}_{conf_type}_{s_kernel}_map_df'
+pre_script_mse_resutls_df = f'{C_est}_{C_pred}_{conf_type}_{s_kernel}_mse_results_df'
+pre_script_df_results = f'{C_est}_{C_pred}_{conf_type}_{s_kernel}_df_results'
+
+# Jsut make on dict with every thing...
 
 # Save in the eksperiments_dict
 two_trend_ExpQuad_dict[pre_script_map_df] = map_df
