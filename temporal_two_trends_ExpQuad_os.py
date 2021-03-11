@@ -41,7 +41,7 @@ C_pred = 100 #1 # 100
 C_est = 100 #32 #100
 
 # conflict type. Som might need lower c_est than 100 to work
-conf_type = 'ged_best_sb' #['ged_best_sb', 'ged_best_ns', 'ged_best_os', 'ged_best']
+conf_type = 'ged_best_os' #['ged_best_sb', 'ged_best_ns', 'ged_best_os', 'ged_best']
 
 # short term kernel
 s_kernel = 'ExpQuad' #['ExpQuad', 'RatQuad', 'Matern32'] #, 'Matern52']
@@ -189,8 +189,8 @@ two_trend_ExpQuad_dict[pre_script_df_results] = df_results
 two_trend_ExpQuad_dict[pre_script_df] = df_merged
             
 
-#new_file_name = "/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/two_trend_ExpQuad_sb_dict.pkl"
-new_file_name = '/home/projects/ku_00017/data/generated/currents/two_trend_ExpQuad_sb_dict.pkl'
+#new_file_name = "/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/two_trend_ExpQuad_os_dict.pkl"
+new_file_name = '/home/projects/ku_00017/data/generated/currents/two_trend_ExpQuad_os_dict.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(two_trend_ExpQuad_dict, output)
 output.close()
@@ -201,3 +201,6 @@ final_time = time.time()
 final_run_time = final_time - start_time
 string = f'Run for {final_run_time/60:.3} minutes'
 print(string)
+
+
+#plot_predictions(df_merged)
