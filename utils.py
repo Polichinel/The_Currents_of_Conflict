@@ -368,10 +368,20 @@ def get_metrics(df_merged, train_id, test_id):
 #    X_test = df_merged[df_merged['id'].isin(test_id)][['mu_l', 'mu_l_slope', 'mu_l_acc', 'mu_l_mass']] 
 #    y_test = (df_merged[df_merged['id'].isin(test_id)]['y'] > 0) * 1
 
-    X_train = df_merged[df_merged['id'].isin(train_id)][['mu', 'mu_slope', 'mu_acc', 'mu_mass','mu_s', 'mu_s_slope', 'mu_s_acc', 'mu_s_mass','mu_l', 'mu_l_slope', 'mu_l_acc', 'mu_l_mass']] 
+    X_train = df_merged[df_merged['id'].isin(train_id)][['mu', 'mu_slope', 'mu_acc', 
+                                                         'mu_mass','mu_s', 'mu_s_slope', 
+                                                         'mu_s_acc', 'mu_s_mass','mu_l', 
+                                                         'mu_l_slope', 'mu_l_acc', 'mu_l_mass',
+                                                         'var', 'var_s', 'var_l']] 
+    
     y_train = (df_merged[df_merged['id'].isin(train_id)]['y'] > 0) * 1
 
-    X_test = df_merged[df_merged['id'].isin(test_id)][[ 'mu', 'mu_slope', 'mu_acc', 'mu_mass','mu_s', 'mu_s_slope', 'mu_s_acc', 'mu_s_mass','mu_l', 'mu_l_slope', 'mu_l_acc', 'mu_l_mass']] 
+    X_test = df_merged[df_merged['id'].isin(test_id)][['mu', 'mu_slope', 'mu_acc', 
+                                                         'mu_mass','mu_s', 'mu_s_slope', 
+                                                         'mu_s_acc', 'mu_s_mass','mu_l', 
+                                                         'mu_l_slope', 'mu_l_acc', 'mu_l_mass',
+                                                         'var', 'var_s', 'var_l']]
+                                                          
     y_test = (df_merged[df_merged['id'].isin(test_id)]['y'] > 0) * 1
 
 
