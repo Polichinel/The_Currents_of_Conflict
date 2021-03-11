@@ -155,10 +155,19 @@ mse_resutls_df = get_mse(df_merged = df_merged, train_id = train_id, test_id = v
 # Creating devrivatives:
 print('Creating devrivatives')
 df_merged.sort_values(['pg_id', 'X'], inplace= True)
+df_merged['mu_slope'] = df_merged.groupby('pg_id')['mu'].transform(np.gradient)
+df_merged['mu_acc'] = df_merged.groupby('pg_id')['mu_slope'].transform(np.gradient)
+df_merged['mu_mass'] = df_merged.groupby('pg_id')['mu'].transform(np.cumsum)
+
+df_merged['mu_s_slope'] = df_merged.groupby('pg_id')['mu_s'].transform(np.gradient)
+df_merged['mu_s_acc'] = df_merged.groupby('pg_id')['mu_s_slope'].transform(np.gradient)
+df_merged['mu_s_mass'] = df_merged.groupby('pg_id')['mu_s'].transform(np.cumsum)
+
 df_merged['mu_l_slope'] = df_merged.groupby('pg_id')['mu_l'].transform(np.gradient)
 df_merged['mu_l_acc'] = df_merged.groupby('pg_id')['mu_l_slope'].transform(np.gradient)
 df_merged['mu_l_mass'] = df_merged.groupby('pg_id')['mu_l'].transform(np.cumsum)
-            
+
+
 # Get classification results
 print('Getting classifcation results')
 df_results = get_metrics(df_merged = df_merged, train_id = train_id, test_id = val_id)
