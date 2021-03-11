@@ -32,7 +32,7 @@ from sklearn import metrics
 two_trend_ExpQuad_dict = {}
 
 # minimum number of conf in timeslines predicted. C = 0 for full run
-C_pred = 4 # 100
+C_pred = 1 # 100
 
 # minimum number of conf in timeslines used to est hyper parameters
 C_est = 32 #100
