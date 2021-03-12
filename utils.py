@@ -224,6 +224,8 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, demean 
         X = df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None]
         y = np.log(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values
 
+        gp.mean_func = pm.gp.mean.Constant(y.mean()) # individual mean_func
+
         mu, var = gp.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X, 'y' : y, 'noise' : σ}, diag=True)
         mu_s, var_s = gp_s.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X, 'y' : y, 'noise' : σ}, diag=True)
         mu_l, var_l = gp_l.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X, 'y' : y, 'noise' : σ}, diag=True)
@@ -381,7 +383,7 @@ def get_metrics(df_merged, train_id, test_id):
                                                          'mu_s_acc', 'mu_s_mass','mu_l', 
                                                          'mu_l_slope', 'mu_l_acc', 'mu_l_mass',
                                                          'var', 'var_s', 'var_l']]
-                                                          
+
     y_test = (df_merged[df_merged['id'].isin(test_id)]['y'] > 0) * 1
 
 

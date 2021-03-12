@@ -124,6 +124,8 @@ with pm.Model() as model:
         X = df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None]
         y = np.log( df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values
 
+        gp.mean_func = pm.gp.mean.Constant(y.mean()) # individual mean_func
+
         y_ = gp.marginal_likelihood(f'y_{i}', X=X, y=y, noise= σ)
     
     mp = pm.find_MAP()
