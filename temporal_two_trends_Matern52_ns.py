@@ -38,7 +38,7 @@ two_trend_Matern52_dict = {}
 C_pred = 1 # 100
 
 # minimum number of conf in timeslines used to est hyper parameters
-C_est = 32 #100
+C_est = 32 #
 
 # conflict type. Som might need lower c_est than 100 to work
 conf_type = 'ged_best_ns' #['ged_best_sb', 'ged_best_ns', 'ged_best_os', 'ged_best']
@@ -195,6 +195,7 @@ output = open(new_file_name, 'wb')
 pickle.dump(two_trend_Matern52_dict, output)
 output.close()
 
+
 # end timer
 final_time = time.time()
 final_run_time = final_time - start_time
@@ -202,3 +203,4 @@ string = f'Run for {final_run_time/60:.3} minutes'
 print(string)
 
 
+#plot_predictions(df_merged)

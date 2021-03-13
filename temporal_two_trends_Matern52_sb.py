@@ -195,10 +195,9 @@ output = open(new_file_name, 'wb')
 pickle.dump(two_trend_Matern52_dict, output)
 output.close()
 
+
 # end timer
 final_time = time.time()
 final_run_time = final_time - start_time
 string = f'Run for {final_run_time/60:.3} minutes'
 print(string)
-
-
