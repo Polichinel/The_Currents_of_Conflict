@@ -192,7 +192,7 @@ two_trend_Matern32_dict[pre_script_df] = df_merged
 #new_file_name = "/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/two_trend_Matern32_os_dict.pkl"
 new_file_name = '/home/projects/ku_00017/data/generated/currents/two_trend_Matern32d_os_dict.pkl'
 output = open(new_file_name, 'wb')
-pickle.dump(two_trend_Matern32d_dict, output)
+pickle.dump(two_trend_Matern32_dict, output)
 output.close()
 
 
