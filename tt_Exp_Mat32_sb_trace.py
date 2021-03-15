@@ -146,4 +146,4 @@ output = open(file_name, 'wb')
 pickle.dump(mp, output)
 output.close()
 
-
+# correct trace pickle: https://stackoverflow.com/questions/44764932/can-a-pymc3-trace-be-loaded-and-values-accessed-without-the-original-model-in-me#44768217
