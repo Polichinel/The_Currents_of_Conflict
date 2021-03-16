@@ -136,14 +136,18 @@ mp = {'ℓ' : np.array([pm.summary(trace)['mean'].iloc[0]]),
       'σ' : np.array([pm.summary(trace)['mean'].iloc[2]])}
 
 
-file_name = "/home/projects/ku_00017/data/generated/currents/tt_Exp_Mar32_sb_trace.pkl"
-output = open(file_name, 'wb') 
-pickle.dump(trace, output)
-output.close()
+#file_name = "/home/projects/ku_00017/data/generated/currents/tt_Exp_Mar32_sb_trace.pkl"
+#output = open(file_name, 'wb') 
+#pickle.dump(trace, output)
+#output.close()
 
-file_name = "/home/projects/ku_00017/data/generated/currents/tt_Exp_Mar32_sb_mp.pkl"
-output = open(file_name, 'wb') 
+file_name_mp = "/home/projects/ku_00017/data/generated/currents/tt_Exp_Mat32_sb_mp.pkl"
+output = open(file_name_mp, 'wb') 
 pickle.dump(mp, output)
 output.close()
 
 # correct trace pickle: https://stackoverflow.com/questions/44764932/can-a-pymc3-trace-be-loaded-and-values-accessed-without-the-original-model-in-me#44768217
+
+file_name_model = "/home/projects/ku_00017/data/generated/currents/tt_Exp_Mat32_sb_model.pkl"
+with open(file_name_model, 'wb') as buff:
+    pickle.dump({'model': model, 'trace': trace}, buff)
