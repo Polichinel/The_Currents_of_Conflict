@@ -35,7 +35,7 @@ from sklearn import metrics
 two_trend_Matern32_dict = {}
 
 # minimum number of conf in timeslines predicted. C = 0 for full run
-C_pred = 1 # 100
+C_pred = 0 # 100
 
 # minimum number of conf in timeslines used to est hyper parameters
 C_est = 32 #100
@@ -190,7 +190,7 @@ two_trend_Matern32_dict[pre_script_df] = df_merged
             
 
 #new_file_name = "/home/polichinel/Documents/Articles/conflict_prediction/data/ViEWS/tt_Exp_Mat32_sb_dict.pkl"
-new_file_name = '/home/projects/ku_00017/data/generated/currents/tt_Exp_Mat32_sb_dict.pkl'
+new_file_name = '/home/projects/ku_00017/data/generated/currents/all_tt_Exp_Mat32_sb_dict.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(two_trend_Matern32_dict, output)
 output.close()
