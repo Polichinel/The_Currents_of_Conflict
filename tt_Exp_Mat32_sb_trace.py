@@ -120,7 +120,7 @@ with pm.Model() as model:
         clear_output(wait=True)
 
         X = df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None]
-        y = np.log( df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values
+        y = np.log(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values
 
         y_ = gp.marginal_likelihood(f'y_{i}', X=X, y=y, noise= σ)
     
@@ -147,7 +147,6 @@ pickle.dump(mp, output)
 output.close()
 
 # correct trace pickle: https://stackoverflow.com/questions/44764932/can-a-pymc3-trace-be-loaded-and-values-accessed-without-the-original-model-in-me#44768217
-
 file_name_model = "/home/projects/ku_00017/data/generated/currents/tt_Exp_Mat32_sb_model.pkl"
 with open(file_name_model, 'wb') as buff:
     pickle.dump({'model': model, 'trace': trace}, buff)
