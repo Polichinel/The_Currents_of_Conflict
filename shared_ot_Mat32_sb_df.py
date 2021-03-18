@@ -145,7 +145,7 @@ out_dict[pre_script_mse_resutls_df] = mse_resutls_df
 out_dict[pre_script_df_results] = df_results
 out_dict[pre_script_df] = df_merged
 
-new_file_name = '/home/projects/ku_00017/data/generated/currents/shared_ot_Exp_sb_dict.pkl'
+new_file_name = '/home/projects/ku_00017/data/generated/currents/shared_ot_Mat32_sb_dict.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(out_dict, output)
 output.close()
