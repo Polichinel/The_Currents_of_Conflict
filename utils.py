@@ -274,7 +274,7 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, demean 
 
 def predict_ot(conf_type, df, train_id, test_id, mp, gp, σ, C):
 
-    """same as above, just lazy implimentation if we only have one trend"""
+    """same as normal, just lazy implimentation if we only have one trend"""
 
     new_id = np.append(train_id, test_id)
     df_sorted = df.sort_values(['pg_id', 'month_id'])
@@ -426,6 +426,32 @@ def get_mse(df_merged, train_id, test_id):
     return(mse_resutls_df)
 
 
+# This here just vectorize it!
+def get_mse_ot(df_merged, train_id, test_id):
+
+    """Same as normal just for one-trend"""
+
+    # iterate over time lines - we would like a distribution of mse
+
+    y_true_train = df_merged[df_merged['id'].isin(train_id)]['y']
+    pred_train = df_merged[df_merged['id'].isin(train_id)]['mu']
+
+    mse_train = mean_squared_error(y_true_train, pred_train)
+
+    y_true_test = df_merged[df_merged['id'].isin(test_id)]['y']
+    pred_test = df_merged[df_merged['id'].isin(test_id)]['mu']
+
+    mse_test = mean_squared_error(y_true_test, pred_test)
+
+    mse_resutls_df = pd.DataFrame({
+            "Gps": ["Full"],
+            "MSE insample (mean)": [mse_train],
+            "MSE outsample (mean)": [mse_test],
+            })
+
+    return(mse_resutls_df)
+
+
 # make sure you can use -1 cores..
 def get_metrics(df_merged, train_id, test_id):
 
@@ -485,3 +511,41 @@ def get_metrics(df_merged, train_id, test_id):
 
     return(df_results)
 
+
+
+# make sure you can use -1 cores..
+def get_metrics_ot(df_merged, train_id, test_id):
+
+    """Same as normal, just for only one-trend"""
+
+    X_train = df_merged[df_merged['id'].isin(train_id)][['mu', 'mu_slope', 'mu_acc', 'mu_mass', 'var']] 
+    
+    y_train = (df_merged[df_merged['id'].isin(train_id)]['y'] > 0) * 1
+
+    X_test = df_merged[df_merged['id'].isin(test_id)][['mu', 'mu_slope', 'mu_acc','mu_mass','var']]
+
+    y_test = (df_merged[df_merged['id'].isin(test_id)]['y'] > 0) * 1
+
+    # totally vanilla - just indicative
+    model = RandomForestClassifier(n_estimators=64, max_depth=6, min_samples_split=8, random_state=42, n_jobs= -1)
+
+    model.fit(X_train, y_train)
+
+    y_train_pred = model.predict_proba(X_train)[:,1]
+    y_test_pred = model.predict_proba(X_test)[:,1]
+
+    AUC_train = metrics.roc_auc_score(y_train, y_train_pred)
+    AP_train = metrics.average_precision_score(y_train, y_train_pred)
+    BS_train = metrics.brier_score_loss(y_train, y_train_pred)
+
+    AUC_test = metrics.roc_auc_score(y_test, y_test_pred)
+    AP_test = metrics.average_precision_score(y_test, y_test_pred)
+    BS_test = metrics.brier_score_loss(y_test, y_test_pred)
+
+    df_results =  pd.DataFrame({
+            "Metrics": ["AUC", "AP", "BS"],
+            "Train": [AUC_train, AP_train, BS_train],
+            "Test": [AUC_test, AP_test, BS_test]
+        })
+
+    return(df_results)
