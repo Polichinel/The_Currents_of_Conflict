@@ -10,8 +10,11 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import mean_squared_error
 from sklearn import metrics
-#import theano
+import theano
 from IPython.display import clear_output
+
+import warnings
+warnings.simplefilter("ignore", UserWarning)
 
 
 def get_views_coord(path, file_name):
@@ -199,6 +202,10 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, demean 
 
     sample_pg_id = sample_conflict_timeline(conf_type = conf_type, df = df, train_id = train_id, test_id = test_id, C = C)
 
+    train_len = df_sorted[df_sorted['id'].isin(train_id)]['month_id'].unique().shape[0]#test
+    X = theano.shared(np.zeros(trian_len)[:,None], 'X')#test
+    y = theano.shared(np.zeros(train_len), 'y')#test
+
     # make lists
     mu_list = []
     mu_s_list = []
@@ -221,8 +228,10 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, demean 
         idx = df_sorted[(df_sorted['id'].isin(new_id)) & (df_sorted['pg_id'] == j)]['id'].values
         y_new = np.log(df_sorted[(df_sorted['id'].isin(new_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values
 
-        X = df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None]
-        y = np.log(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values
+        #X = df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None]
+        #y = np.log(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values
+        X.set_value(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None])
+        y.set_vaule(np.log(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values)
 
         #gp.mean_func = pm.gp.mean.Constant(y.mean()) # individual mean_func
 
