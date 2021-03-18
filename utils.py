@@ -203,7 +203,7 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, demean 
     sample_pg_id = sample_conflict_timeline(conf_type = conf_type, df = df, train_id = train_id, test_id = test_id, C = C)
 
     train_len = df_sorted[df_sorted['id'].isin(train_id)]['month_id'].unique().shape[0]#test
-    X = theano.shared(np.zeros(trian_len)[:,None], 'X')#test
+    X = theano.shared(np.zeros(train_len)[:,None], 'X')#test
     y = theano.shared(np.zeros(train_len), 'y')#test
 
     # make lists
@@ -283,7 +283,7 @@ def predict_ot(conf_type, df, train_id, test_id, mp, gp, σ, C):
     sample_pg_id = sample_conflict_timeline(conf_type = conf_type, df = df, train_id = train_id, test_id = test_id, C = C)
 
     train_len = df_sorted[df_sorted['id'].isin(train_id)]['month_id'].unique().shape[0]#test
-    X = theano.shared(np.zeros(trian_len)[:,None], 'X')#test
+    X = theano.shared(np.zeros(train_len)[:,None], 'X')#test
     y = theano.shared(np.zeros(train_len), 'y')#test
 
     # make lists

@@ -47,6 +47,8 @@ C_est = 100#32 #100
 # conflict type. Som might need lower c_est than 100 to work
 conf_type = 'ged_best_sb' #['ged_best_sb', 'ged_best_ns', 'ged_best_os', 'ged_best']
 
+kernel = 'Exp'
+
 # Start timer
 start_time = time.time()
 
@@ -58,7 +60,7 @@ df = get_views_coord(path = path, file_name = file_name)
 # get train and validation id:
 train_id, val_id = test_val_train(df)
 
-print(f"{C_est}_{C_pred}_{conf_type}_{s_kernel}\n")
+print(f"{C_est}_{C_pred}_{conf_type}_{kernel}\n")
 
 # Priors
 η_beta = 2
@@ -78,6 +80,9 @@ with pm.Model() as model:
 
     # mean func. (constant) 
     mean =  pm.gp.mean.Zero()# placeholder if you do individuel
+
+    # sample and split X,y ---------------------------------------------  
+    sample_pr_id = sample_conflict_timeline(conf_type = conf_type, df = df, train_id = train_id, test_id = val_id, C = C_est)
 
     # GP
     gp = pm.gp.Marginal(mean_func = mean, cov_func=cov)
@@ -129,10 +134,10 @@ df_results = get_metrics_ot(df_merged = df_merged, train_id = train_id, test_id 
 
 # "filing" names
 print('Saving..')
-pre_script_map_df = f'{C_est}_{C_pred}_{conf_type}_{s_kernel}_map_df'
-pre_script_mse_resutls_df = f'{C_est}_{C_pred}_{conf_type}_{s_kernel}_mse_results_df'
-pre_script_df_results = f'{C_est}_{C_pred}_{conf_type}_{s_kernel}_df_results'
-pre_script_df = f'{C_est}_{C_pred}_{conf_type}_{s_kernel}_df_merged'
+pre_script_map_df = f'{C_est}_{C_pred}_{conf_type}_{kernel}_map_df'
+pre_script_mse_resutls_df = f'{C_est}_{C_pred}_{conf_type}_{kernel}_mse_results_df'
+pre_script_df_results = f'{C_est}_{C_pred}_{conf_type}_{kernel}_df_results'
+pre_script_df = f'{C_est}_{C_pred}_{conf_type}_{kernel}_df_merged'
 
 # Save in the eksperiments_dict
 out_dict[pre_script_map_df] = map_df
