@@ -116,7 +116,7 @@ with pm.Model() as model:
     df_sorted = df.sort_values(['pg_id', 'month_id'])
 
     # shared:
-    pg_len = df_sorted[df_sorted['id'].isin(train_id)]['X'].unique().shape[0]
+    pg_len = df_sorted[df_sorted['id'].isin(train_id)]['month_id'].unique().shape[0]
     X = theano.shared(np.zeros(pg_len)[:,None], 'X')
     y = theano.shared(np.zeros(pg_len), 'y')
 
