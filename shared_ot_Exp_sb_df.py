@@ -14,10 +14,10 @@ from utils import get_views_coord
 from utils import test_val_train
 from utils import sample_conflict_timeline
 from utils import get_hyper_priors
-from utils import predict
+from utils import predict_ot
 from utils import plot_predictions
-from utils import get_mse
-from utils import get_metrics
+from utils import get_mse_ot
+from utils import get_metrics_ot
 
 import pymc3 as pm
 import theano
@@ -39,16 +39,13 @@ warnings.simplefilter("ignore", UserWarning)
 out_dict = {}
 
 # minimum number of conf in timeslines predicted. C = 0 for full run
-C_pred = 100#01 # 100
+C_pred = 100#1 # 100
 
 # minimum number of conf in timeslines used to est hyper parameters
 C_est = 100#32 #100
 
 # conflict type. Som might need lower c_est than 100 to work
 conf_type = 'ged_best_sb' #['ged_best_sb', 'ged_best_ns', 'ged_best_os', 'ged_best']
-
-# short term kernel
-s_kernel = 'Matern32' #['ExpQuad', 'RatQuad', 'Matern32'] #, 'Matern52']
 
 # Start timer
 start_time = time.time()
@@ -63,58 +60,27 @@ train_id, val_id = test_val_train(df)
 
 print(f"{C_est}_{C_pred}_{conf_type}_{s_kernel}\n")
 
-
-# Constuction the gps and getting the map
-hps = get_hyper_priors(plot = False)
+# Priors
+η_beta = 2
+ℓ_beta = 0.2
+ℓ_alpha = 8
+σ_beta = 5
 
 with pm.Model() as model:
 
-# short term trend/irregularities ---------------------------------
+    # trend
+    ℓ = pm.Gamma("ℓ", alpha=ℓ_alpha , beta=ℓ_beta)
+    η = pm.HalfCauchy("η", beta=η_beta)
+    cov = η **2 * pm.gp.cov.ExpQuad(1, ℓ) # Cov func.
 
-    ℓ_s = pm.Gamma("ℓ_s", alpha=hps['ℓ_alpha_s'] , beta=hps['ℓ_beta_s'])
-    η_s = pm.HalfCauchy("η_s", beta=hps['η_beta_s'])
+    # noise model
+    σ = pm.HalfCauchy("σ", beta=σ_beta)
 
-    # mean func for short term trend
-    mean_s =  pm.gp.mean.Zero()
+    # mean func. (constant) 
+    mean =  pm.gp.mean.Zero()# placeholder if you do individuel
 
-    # cov function for short term trend
-    if s_kernel == 'ExpQuad': 
-        cov_s = η_s ** 2 * pm.gp.cov.ExpQuad(1, ℓ_s) 
-
-    elif s_kernel == 'Matern32': 
-        cov_s = η_s ** 2 * pm.gp.cov.Matern32(1, ℓ_s) 
-
-    elif s_kernel == 'Matern52': 
-        cov_s = η_s ** 2 * pm.gp.cov.Matern32(1, ℓ_s) 
-
-    elif s_kernel == 'RatQuad': 
-
-        α_s = pm.Gamma("α_s", alpha=hps['α_alpha_s'], beta=hps['α_beta_s']) 
-        cov_s = η_s ** 2 * pm.gp.cov.RatQuad(1, ℓ_s, α_s) # this seems to help alot when you split the trends below
-
-    # GP short term trend 
-    gp_s = pm.gp.Marginal(mean_func = mean_s, cov_func=cov_s)
-
-
-    # long term trend -------------------------------------------------
-    ℓ_l = pm.Gamma("ℓ_l", alpha=hps['ℓ_alpha_l'] , beta=hps['ℓ_beta_l'])
-    η_l = pm.HalfCauchy("η_l", beta=hps['η_beta_l'])
-                
-    # mean and kernal for long term trend
-    mean_l =  pm.gp.mean.Zero()
-    cov_l = η_l **2 * pm.gp.cov.ExpQuad(1, ℓ_l) # Cov func.
-                
-    # GP short term trend 
-    gp_l = pm.gp.Marginal(mean_func = mean_l, cov_func=cov_l)
-
-    # noise (constant "white noise") -----------------------------------
-    σ = pm.HalfCauchy("σ", beta=hps['σ_beta'])
-
-    # sample and split X,y ---------------------------------------------  
-    sample_pr_id = sample_conflict_timeline(conf_type = conf_type, df = df, train_id = train_id, test_id = val_id, C = C_est)
-
-    # Full GP ----------------------------------------------------------
-    gp = gp_s + gp_l
+    # GP
+    gp = pm.gp.Marginal(mean_func = mean, cov_func=cov)
 
     df_sorted = df.sort_values(['pg_id', 'month_id'])
 
@@ -136,32 +102,18 @@ with pm.Model() as model:
     
     mp = pm.find_MAP()
 
-# get alpha if you used the Rational Quadratic kernel for short term
-if s_kernel == 'RatQuad':
-
-    map_df = pd.DataFrame({
-        "Parameter": ["ℓ_s", "η_s", "α_s", "ℓ_l", "η_l", "σ"],
-        "Value at MAP": [float(mp["ℓ_s"]), float(mp["η_s"]), float(mp["α_s"]), float(mp["ℓ_l"]), float(mp["η_l"]), float(mp["σ"])]
-        })
-
-# if Exponentiated Quadratic og Matern kernel were used ignore alpha
-else:
-
-    map_df = pd.DataFrame({
-        "Parameter": ["ℓ_s", "η_s", "ℓ_l", "η_l", "σ"],
-        "Value at MAP": [float(mp["ℓ_s"]), float(mp["η_s"]), float(mp["ℓ_l"]), float(mp["η_l"]), float(mp["σ"])]
-        }) 
+map_df = pd.DataFrame({"Parameter": ["ℓ", "η", "σ"],"Value at MAP": [float(mp["ℓ"]), float(mp["η"]), float(mp["σ"])]}) 
 
 
 # Getting the predictions and merging with original df:
-df_new = predict(conf_type = conf_type, df = df, train_id = train_id, test_id = val_id, mp = mp, gp = gp, gp_s = gp_s, gp_l = gp_l, σ=σ, C=C_pred)
+df_new = predict_ot(conf_type = conf_type, df = df, train_id = train_id, test_id = val_id, mp = mp, gp = gp, σ=σ, C=C_pred)
 
 df_merged = pd.merge(df_new, df[['id', 'pg_id','year','gwcode', 'xcoord', 'ycoord','ged_best_sb','ged_best_ns', 'ged_best_os', 'ged_best']], how = 'left', on = ['id', 'pg_id'])
 
 
 # getting mse results:
 print('Getting MSE')
-mse_resutls_df = get_mse(df_merged = df_merged, train_id = train_id, test_id = val_id)
+mse_resutls_df = get_mse_ot(df_merged = df_merged, train_id = train_id, test_id = val_id)
 
 # Creating devrivatives:
 print('Creating devrivatives')
@@ -170,18 +122,10 @@ df_merged['mu_slope'] = df_merged.groupby('pg_id')['mu'].transform(np.gradient)
 df_merged['mu_acc'] = df_merged.groupby('pg_id')['mu_slope'].transform(np.gradient)
 df_merged['mu_mass'] = df_merged.groupby('pg_id')['mu'].transform(np.cumsum)
 
-df_merged['mu_s_slope'] = df_merged.groupby('pg_id')['mu_s'].transform(np.gradient)
-df_merged['mu_s_acc'] = df_merged.groupby('pg_id')['mu_s_slope'].transform(np.gradient)
-df_merged['mu_s_mass'] = df_merged.groupby('pg_id')['mu_s'].transform(np.cumsum)
-
-df_merged['mu_l_slope'] = df_merged.groupby('pg_id')['mu_l'].transform(np.gradient)
-df_merged['mu_l_acc'] = df_merged.groupby('pg_id')['mu_l_slope'].transform(np.gradient)
-df_merged['mu_l_mass'] = df_merged.groupby('pg_id')['mu_l'].transform(np.cumsum)
-
 
 # Get classification results
 print('Getting classifcation results')
-df_results = get_metrics(df_merged = df_merged, train_id = train_id, test_id = val_id)
+df_results = get_metrics_ot(df_merged = df_merged, train_id = train_id, test_id = val_id)
 
 # "filing" names
 print('Saving..')
@@ -195,8 +139,8 @@ out_dict[pre_script_map_df] = map_df
 out_dict[pre_script_mse_resutls_df] = mse_resutls_df
 out_dict[pre_script_df_results] = df_results
 out_dict[pre_script_df] = df_merged
-            
-new_file_name = '/home/projects/ku_00017/data/generated/currents/shared_tt_Exp_Mat32_sb_dict.pkl'
+
+new_file_name = '/home/projects/ku_00017/data/generated/currents/shared_ot_Exp_sb_dict.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(out_dict, output)
 output.close()

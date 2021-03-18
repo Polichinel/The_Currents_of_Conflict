@@ -39,7 +39,7 @@ warnings.simplefilter("ignore", UserWarning)
 out_dict = {}
 
 # minimum number of conf in timeslines predicted. C = 0 for full run
-C_pred = 100#01 # 100
+C_pred = 100#1 # 100
 
 # minimum number of conf in timeslines used to est hyper parameters
 C_est = 100#32 #100
@@ -48,7 +48,7 @@ C_est = 100#32 #100
 conf_type = 'ged_best_sb' #['ged_best_sb', 'ged_best_ns', 'ged_best_os', 'ged_best']
 
 # short term kernel
-s_kernel = 'Matern32' #['ExpQuad', 'RatQuad', 'Matern32'] #, 'Matern52']
+s_kernel = 'ExpQuad' #['ExpQuad', 'RatQuad', 'Matern32'] #, 'Matern52']
 
 # Start timer
 start_time = time.time()
@@ -195,8 +195,8 @@ out_dict[pre_script_map_df] = map_df
 out_dict[pre_script_mse_resutls_df] = mse_resutls_df
 out_dict[pre_script_df_results] = df_results
 out_dict[pre_script_df] = df_merged
-            
-new_file_name = '/home/projects/ku_00017/data/generated/currents/shared_tt_Exp_Mat32_sb_dict.pkl'
+
+new_file_name = '/home/projects/ku_00017/data/generated/currents/shared_tt_Exp_Exp_sb_dict.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(out_dict, output)
 output.close()
