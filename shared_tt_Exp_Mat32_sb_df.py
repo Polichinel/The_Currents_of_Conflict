@@ -20,6 +20,7 @@ from utils import get_mse
 from utils import get_metrics
 
 import pymc3 as pm
+import theano
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import AdaBoostClassifier
