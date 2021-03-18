@@ -272,7 +272,69 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, demean 
 
     return(df_new)
 
+def predict_ot(conf_type, df, train_id, test_id, mp, gp, σ, C):
 
+    """same as above, just lazy implimentation if we only have one trend"""
+
+    new_id = np.append(train_id, test_id)
+    df_sorted = df.sort_values(['pg_id', 'month_id'])
+    X_new = df_sorted[df_sorted['id'].isin(new_id) ]['month_id'].unique()[:,None] # all X
+
+    sample_pg_id = sample_conflict_timeline(conf_type = conf_type, df = df, train_id = train_id, test_id = test_id, C = C)
+
+    train_len = df_sorted[df_sorted['id'].isin(train_id)]['month_id'].unique().shape[0]#test
+    X = theano.shared(np.zeros(trian_len)[:,None], 'X')#test
+    y = theano.shared(np.zeros(train_len), 'y')#test
+
+    # make lists
+    mu_list = []
+    var_list = []
+    X_new_list = []
+    y_new_list = []
+    idx_list = []
+    pg_idx_list = []
+    train_list = []
+
+    # Loop gp predict over time lines
+    for i, j in enumerate(sample_pg_id):
+
+        print(f'Time-line {i+1}/{sample_pg_id.shape[0]} in the works (prediction)...')
+        clear_output(wait=True)        
+
+        idx = df_sorted[(df_sorted['id'].isin(new_id)) & (df_sorted['pg_id'] == j)]['id'].values
+        y_new = np.log(df_sorted[(df_sorted['id'].isin(new_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values
+
+        #X = df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None]
+        #y = np.log(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values
+        X.set_value(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None])
+        y.set_vaule(np.log(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values)
+
+        #gp.mean_func = pm.gp.mean.Constant(y.mean()) # individual mean_func
+
+        mu, var = gp.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X, 'y' : y, 'noise' : σ}, diag=True)
+
+        mu_list.append(mu)
+        var_list.append(var)
+        X_new_list.append(X_new)
+        y_new_list.append(y_new)
+        idx_list.append(idx)
+        pg_idx_list.append([j] * mu.shape[0])
+        train_list.append(np.array([1] * y.shape[0] + [0] * (mu.shape[0] - y.shape[0]))) # dummy for training...
+
+    mu_col = np.array(mu_list).reshape(-1,) 
+    var_col = np.array(var_list).reshape(-1,) 
+    X_new_col = np.array(X_new_list).reshape(-1,) 
+    y_new_col = np.array(y_new_list).reshape(-1,)     
+    idx_col = np.array(idx_list).reshape(-1,)    
+    pg_idx_col = np.array(pg_idx_list).reshape(-1,)
+    train_col =  np.array(train_list).reshape(-1,)
+
+    df_new = pd.DataFrame({
+                            'mu': mu_col, 'var' : var_col, 'X' : X_new_col, 'y' : y_new_col , 
+                            'id' : idx_col, 'pg_id' : pg_idx_col, 'train' : train_col
+                            })
+
+    return(df_new)
 
 def plot_predictions(df_merged):
 
