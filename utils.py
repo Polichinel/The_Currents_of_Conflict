@@ -250,7 +250,7 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, demean 
         y_new_list.append(y_new)
         idx_list.append(idx)
         pg_idx_list.append([j] * mu.shape[0])
-        train_list.append(np.array([1] * train_len + [0] * test_len) # dummy for training...
+        train_list.append(np.array([1] * train_len + [0] * test_len)) # dummy for training...
 
     mu_col = np.array(mu_list).reshape(-1,) 
     mu_s_col = np.array(mu_s_list).reshape(-1,) 
@@ -321,7 +321,7 @@ def predict_ot(conf_type, df, train_id, test_id, mp, gp, σ, C):
         y_new_list.append(y_new)
         idx_list.append(idx)
         pg_idx_list.append([j] * mu.shape[0])
-        train_list.append(np.array([1] * train_len + [0] * test_len) # dummy for training...
+        train_list.append(np.array([1] * train_len + [0] * test_len)) # dummy for training...
         #train_list.append(np.array([1] * y.shape[0] + [0] * (mu.shape[0] - y.shape[0]))) # dummy for training...
 
     mu_col = np.array(mu_list).reshape(-1,) 
