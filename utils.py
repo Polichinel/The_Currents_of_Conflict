@@ -203,6 +203,7 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, demean 
     sample_pg_id = sample_conflict_timeline(conf_type = conf_type, df = df, train_id = train_id, test_id = test_id, C = C)
 
     train_len = df_sorted[df_sorted['id'].isin(train_id)]['month_id'].unique().shape[0]#test
+    test_len = df_sorted[df_sorted['id'].isin(test_id)]['month_id'].unique().shape[0]#test
     X = theano.shared(np.zeros(train_len)[:,None], 'X')#test
     y = theano.shared(np.zeros(train_len), 'y')#test
 
@@ -249,7 +250,7 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, demean 
         y_new_list.append(y_new)
         idx_list.append(idx)
         pg_idx_list.append([j] * mu.shape[0])
-        train_list.append(np.array([1] * y.shape[0] + [0] * (mu.shape[0] - y.shape[0]))) # dummy for training...
+        train_list.append(np.array([1] * train_len + [0] * test_len) # dummy for training...
 
     mu_col = np.array(mu_list).reshape(-1,) 
     mu_s_col = np.array(mu_s_list).reshape(-1,) 
@@ -283,6 +284,7 @@ def predict_ot(conf_type, df, train_id, test_id, mp, gp, σ, C):
     sample_pg_id = sample_conflict_timeline(conf_type = conf_type, df = df, train_id = train_id, test_id = test_id, C = C)
 
     train_len = df_sorted[df_sorted['id'].isin(train_id)]['month_id'].unique().shape[0]#test
+    test_len = df_sorted[df_sorted['id'].isin(test_id)]['month_id'].unique().shape[0]#test
     X = theano.shared(np.zeros(train_len)[:,None], 'X')#test
     y = theano.shared(np.zeros(train_len), 'y')#test
 
@@ -319,7 +321,8 @@ def predict_ot(conf_type, df, train_id, test_id, mp, gp, σ, C):
         y_new_list.append(y_new)
         idx_list.append(idx)
         pg_idx_list.append([j] * mu.shape[0])
-        train_list.append(np.array([1] * y.shape[0] + [0] * (mu.shape[0] - y.shape[0]))) # dummy for training...
+        train_list.append(np.array([1] * train_len + [0] * test_len) # dummy for training...
+        #train_list.append(np.array([1] * y.shape[0] + [0] * (mu.shape[0] - y.shape[0]))) # dummy for training...
 
     mu_col = np.array(mu_list).reshape(-1,) 
     var_col = np.array(var_list).reshape(-1,) 
