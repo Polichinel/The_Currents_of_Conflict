@@ -128,18 +128,23 @@ with pm.Model() as model:
 
 with model:
     print('Starting trace:\n')
-    trace = pm.sample(1000, chains=5, cores=20, return_inferencedata=True)
+    trace = pm.sample(1000, chains=10, cores=10)
 
 
 mp = {'ℓ' : np.array([pm.summary(trace)['mean'].iloc[0]]),  
       'η': np.array([pm.summary(trace)['mean'].iloc[1]]), 
-      'σ' : np.array([pm.summary(trace)['mean'].iloc[2]])}
+      'σ' : np.array([pm.summary(trace)['mean'].iloc[2]]),
+      'ℓ_sd' : np.array([pm.summary(trace)['sd'].iloc[0]]),  
+      'η_sd': np.array([pm.summary(trace)['sd'].iloc[1]]), 
+      'σ_sd' : np.array([pm.summary(trace)['sd'].iloc[2]]),
+      }
 
 
-#file_name = "/home/projects/ku_00017/data/generated/currents/tt_Exp_Mar32_sb_trace.pkl"
-#output = open(file_name, 'wb') 
-#pickle.dump(trace, output)
-#output.close()
+# this have worked before...
+file_name = "/home/projects/ku_00017/data/generated/currents/tt_Exp_Mar32_sb_trace.pkl"
+output = open(file_name, 'wb') 
+pickle.dump(trace, output)
+output.close()
 
 file_name_mp = "/home/projects/ku_00017/data/generated/currents/tt_Exp_Mat32_sb_mp.pkl"
 output = open(file_name_mp, 'wb') 
@@ -147,6 +152,6 @@ pickle.dump(mp, output)
 output.close()
 
 # correct trace pickle: https://stackoverflow.com/questions/44764932/can-a-pymc3-trace-be-loaded-and-values-accessed-without-the-original-model-in-me#44768217
-file_name_model = "/home/projects/ku_00017/data/generated/currents/tt_Exp_Mat32_sb_model.pkl"
-with open(file_name_model, 'wb') as buff:
-    pickle.dump({'model': model, 'trace': trace}, buff)
+#file_name_model = "/home/projects/ku_00017/data/generated/currents/tt_Exp_Mat32_sb_model.pkl"
+#with open(file_name_model, 'wb') as buff:
+#    pickle.dump({'model': model, 'trace': trace}, buff)
