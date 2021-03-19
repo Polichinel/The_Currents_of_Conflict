@@ -20,6 +20,7 @@ from utils import get_mse
 from utils import get_metrics
 
 import pymc3 as pm
+import theano
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import AdaBoostClassifier
@@ -27,6 +28,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import mean_squared_error
 from sklearn import metrics
 
+import warnings
+warnings.simplefilter("ignore", UserWarning)
 
 # dict for the dfs/dicts holding the results
 two_trend_Matern32_dict = {}
@@ -113,14 +116,19 @@ with pm.Model() as model:
 
     df_sorted = df.sort_values(['pg_id', 'month_id'])
 
+    # shared:
+    pg_len = df_sorted[df_sorted['id'].isin(train_id)]['month_id'].unique().shape[0]
+    X = theano.shared(np.zeros(pg_len)[:,None], 'X')
+    y = theano.shared(np.zeros(pg_len), 'y')
+
     # sample:
     for i, j in enumerate(sample_pr_id):
 
         print(f'Time-line {i+1}/{sample_pr_id.shape[0]} in the works (estimation)...') 
         clear_output(wait=True)
 
-        X = df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None]
-        y = np.log(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values
+        X.set_value(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None])
+        y.set_value(np.log(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values)
 
         y_ = gp.marginal_likelihood(f'y_{i}', X=X, y=y, noise= σ)
     
@@ -141,12 +149,12 @@ mp = {'ℓ' : np.array([pm.summary(trace)['mean'].iloc[0]]),
 
 
 # this have worked before...
-file_name = "/home/projects/ku_00017/data/generated/currents/tt_Exp_Mar32_sb_trace.pkl"
+file_name = "/home/projects/ku_00017/data/generated/currents/shared_tt_Exp_Mar32_sb_trace.pkl"
 output = open(file_name, 'wb') 
 pickle.dump(trace, output)
 output.close()
 
-file_name_mp = "/home/projects/ku_00017/data/generated/currents/tt_Exp_Mat32_sb_mp.pkl"
+file_name_mp = "/home/projects/ku_00017/data/generated/currents/shared_tt_Exp_Mat32_sb_mp.pkl"
 output = open(file_name_mp, 'wb') 
 pickle.dump(mp, output)
 output.close()
