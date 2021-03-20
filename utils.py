@@ -106,7 +106,7 @@ def test_val_train(df, info = True, test_time = False):
         return(train_id, test_id)
 
 
-def sample_conflict_timeline(conf_type, df, train_id, test_id, C=5):
+def sample_conflict_timeline_old(conf_type, df, train_id, test_id, C=5):
 
     """ This function samples N time-lines contining c>=C conflicts. 
     As default it will try to get the val_id. Error will come if it does not exits"""
@@ -131,6 +131,37 @@ def sample_conflict_timeline(conf_type, df, train_id, test_id, C=5):
     df_sb_total_events = df.groupby(['pg_id']).sum()[dummy].reset_index().rename(columns = {dummy:'ged_total_events'})
     
     sample_pr_id = df_sb_total_events[df_sb_total_events['ged_total_events'] >= C]['pg_id'].unique()
+
+    return(sample_pr_id)
+
+
+def sample_conflict_timeline(conf_type, df, train_id, test_id, C=12):
+
+    """This function samples N time-lines contining C >= conflicts in at least one year.
+    Default C = 12, so that is one year with a conflict each day."""
+
+    #Set the dummy corrospoding to the conflcit type
+    if conf_type == 'ged_best_sb':
+        dummy = 'ged_dummy_sb'
+
+    elif conf_type == 'ged_best_ns':
+        dummy = 'ged_dummy_ns'
+
+    elif conf_type == 'ged_best_os':
+        dummy = 'ged_dummy_os'
+
+    elif conf_type == 'ged_best':
+        dummy = 'ged_dummy'
+
+    # sort the df - just in case
+    df_sorted = df.sort_values(['pg_id', 'month_id'])
+
+    # groupby gids and get total events
+    #df_sb_total_events = df.groupby(['pg_id']).sum()[dummy].reset_index().rename(columns = {dummy:'ged_total_events'})
+     #sample_pr_id = df_sb_total_events[df_sb_total_events['ged_total_events'] >= C]['pg_id'].unique()
+   
+    df_sum = df.groupby(['pg_id', 'year']).sum()[[dummy]].reset_index()
+    sample_pr_id = df_sum[df_sum[dummy] >= C]['pg_id'].unique()
 
     return(sample_pr_id)
 
@@ -187,7 +218,7 @@ def get_hyper_priors(plot = True, η_beta_s = 0.5, ℓ_beta_s = 0.8, ℓ_alpha_s
 
 
 
-def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, demean = False):
+def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, indv_mean = False):
 
     """This function takes the mp, gps and σ for a two-trend implimentation.
     it also needs the df, the train ids and the val/test ids.
@@ -234,7 +265,8 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, demean 
         X.set_value(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None])
         y.set_value(np.log(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values)
 
-        #gp.mean_func = pm.gp.mean.Constant(y.mean()) # individual mean_func
+        if indv_mean == True:
+            #gp.mean_func = pm.gp.mean.Constant(y.mean()) # individual mean_func
 
         mu, var = gp.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X, 'y' : y, 'noise' : σ}, diag=True)
         mu_s, var_s = gp_s.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X, 'y' : y, 'noise' : σ}, diag=True)
