@@ -59,7 +59,7 @@ file_name = 'ViEWS_coord.pkl'
 df = get_views_coord(path = path, file_name = file_name)
 
 # get train and validation id:
-train_id, val_id = test_val_train(df)
+train_id, val_id = test_val_train(df, test_time= True)
 
 print(f"{C_est}_{C_pred}_{conf_type}_{s_kernel}\n")
 
@@ -196,7 +196,7 @@ out_dict[pre_script_mse_resutls_df] = mse_resutls_df
 out_dict[pre_script_df_results] = df_results
 out_dict[pre_script_df] = df_merged
             
-new_file_name = '/home/projects/ku_00017/data/generated/currents/all_np8_shared_tt_Exp_Mat32_sb_dict.pkl'
+new_file_name = '/home/projects/ku_00017/data/generated/currents/testtime_all_np8_shared_tt_Exp_Mat32_sb_dict.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(out_dict, output)
 output.close()
@@ -206,3 +206,4 @@ final_time = time.time()
 final_run_time = final_time - start_time
 string = f'Run for {final_run_time/60:.3} minutes'
 print(string)
+t
