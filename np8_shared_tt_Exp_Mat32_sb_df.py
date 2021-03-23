@@ -206,4 +206,3 @@ final_time = time.time()
 final_run_time = final_time - start_time
 string = f'Run for {final_run_time/60:.3} minutes'
 print(string)
-t
