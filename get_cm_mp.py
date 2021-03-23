@@ -24,11 +24,11 @@ start_time = time.time()
 path = '/home/projects/ku_00017/data/generated/currents' 
 file_name = 'ViEWS_coord.pkl'
 df = get_views_coord(path = path, file_name = file_name)
-print('Got df\n')
+print('Got df')
 
 # get train and validation id:
 train_id, val_id = test_val_train(df, test_time= False)
-print("Got train/val index\n")
+print("Got train/val index")
 
 # Constuction the gps and getting the map
 hps = get_hyper_priors(plot = False)
@@ -94,7 +94,6 @@ with pm.Model() as model:
     for i, j in enumerate(sample_pr_id):
 
         print(f'Time-line {i+1}/{sample_pr_id.shape[0]} in the works (estimation)...', end = '\r') 
-        clear_output(wait=True)
 
         X.set_value(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None])
         y.set_value(np.log(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values)
