@@ -72,8 +72,8 @@ with pm.Model() as model:
     X = theano.shared(np.zeros([coord_len, 2]), 'X')
 
     # this does not vary here:
-    #Xu = theano.shared(df[(df['id'].isin(sample_pr_id))][['xcoord','ycoord']].values, 'Xu')
-    Xu = df[(df['id'].isin(sample_pr_id))][['xcoord','ycoord']].values
+    Xu = theano.shared(df[(df['id'].isin(sample_pr_id))][['xcoord','ycoord']].values, 'Xu')
+    #Xu = df[(df['id'].isin(sample_pr_id))][['xcoord','ycoord']].values
 
     # loop
     month_ids = df[df['id'].isin(train_id)]['month_id'].unique()[:5] # note
@@ -82,8 +82,8 @@ with pm.Model() as model:
     for i, j in enumerate(month_ids):
         print(f'{i+1}/{n} (estimation)', end='\r')       
 
-        y.set_value(np.log(df[(df['id'].isin(train_id)) & (df['month_id'] == j)]['ged_best_sb'].values + 1))
-        X.set_value(df[(df['id'].isin(train_id)) & (df['month_id'] == j)][['xcoord','ycoord']].values)
+        y.set_value(np.log(df[df['month_id'] == j]['ged_best_sb'].values + 1))
+        X.set_value(df[df['month_id'] == j][['xcoord','ycoord']].values)
 
         y_ = gp.marginal_likelihood(f"y_{i}", X=X, Xu = Xu, y=y, noise= σ)
 
