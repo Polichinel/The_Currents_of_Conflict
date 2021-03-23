@@ -72,7 +72,8 @@ with pm.Model() as model:
     X = theano.shared(np.zeros([coord_len, 2]), 'X')
 
     # this does not vary here:
-    Xu = theano.shared(df[(df['id'].isin(sample_pr_id))][['xcoord','ycoord']].values, 'Xu')
+    #Xu = theano.shared(df[(df['id'].isin(sample_pr_id))][['xcoord','ycoord']].values, 'Xu')
+    Xu = df[(df['id'].isin(sample_pr_id))][['xcoord','ycoord']].values
 
     # loop
     month_ids = df[df['id'].isin(train_id)]['month_id'].unique()[:5] # note
