@@ -216,6 +216,36 @@ def get_hyper_priors(plot = True, η_beta_s = 0.5, ℓ_beta_s = 0.8, ℓ_alpha_s
     return(hps)
 
 
+def get_spatial_hps(plot = False):
+
+    """Get the one trend spetial prior"""
+
+    η_beta = 1
+    ℓ_beta = 1
+    ℓ_alpha = 4
+    σ_beta = 3
+
+    grid = np.linspace(0,15,1000)
+    priors = [
+        ('$\eta$_prior', pm.HalfCauchy.dist(beta=η_beta)),
+        ('$\ell$_prior', pm.Gamma.dist(alpha=ℓ_alpha , beta=ℓ_beta )),
+        ('$\sigma$', pm.HalfCauchy.dist(beta=σ_beta))]
+
+    if plot == True:
+
+        plt.figure(figsize= [15,5])
+        plt.title('Hyper-priors')
+
+        for i, prior in enumerate(priors):
+            plt.plot(grid, np.exp(prior[1].logp(grid).eval()), label = prior[0])
+
+        plt.xticks(np.arange(0,16,1))
+        plt.xlim(0,15)
+        plt.legend()
+        plt.show()
+
+    return(η_beta, ℓ_beta, ℓ_alpha, σ_beta)
+
 
 
 def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, indv_mean = False):
