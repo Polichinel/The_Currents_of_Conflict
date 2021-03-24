@@ -24,7 +24,7 @@ warnings.simplefilter("ignore", UserWarning)
 start_time = time.time()
 
 # minimum number of conf in timeslines predicted. C = 0 for full run
-C_pred = 0 # 100
+C_pred = 1# 100
 
 # minimum number of conf in one year in timeslines used to est hyper parameters
 C_est = 8
