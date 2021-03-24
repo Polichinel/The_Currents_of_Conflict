@@ -104,14 +104,10 @@ with pm.Model() as model:
     mp = pm.find_MAP()
 print('Got mp')
 
-# put it into a df for order - can always go back
-cm_mp_df = pd.DataFrame({"Parameter": ["ℓ_s", "η_s", "ℓ_l", "η_l", "σ"],
-                       "Value at MAP": [float(mp["ℓ_s"]), float(mp["η_s"]), float(mp["ℓ_l"]), float(mp["η_l"]), float(mp["σ"])]}) 
-
 print('Pickling..')
-new_file_name = '/home/projects/ku_00017/data/generated/currents/cm_mp_df.pkl'
+new_file_name = '/home/projects/ku_00017/data/generated/currents/cm_mp.pkl'
 output = open(new_file_name, 'wb')
-pickle.dump(cm_mp_df, output)
+pickle.dump(mp, output)
 output.close()
 
 # end timer
