@@ -89,9 +89,9 @@ with pm.Model() as model:
 
         y.set_value(np.log(df[(df['id'].isin(train_id)) & (df['month_id'] == j)]['ged_best_sb'].values + 1))
         X.set_value(df[(df['id'].isin(train_id))  & (df['month_id'] == j)][['xcoord','ycoord']].values)
-        Xu.set_value(df[df['month_id'] == j].sort_values('ged_best_sb', ascending = False)[:nnz][['xcoord','ycoord']].values) # could also just be all non-zeroes that month
+        Xu.set_value(df[df['month_id'] == j].sort_values('ged_best_sb', ascending = False)[:nnz][['xcoord','ycoord']].values) 
 
-        #Xu.set_value(df[(df['pg_id'].isin(sample_pr_id)) & (df['month_id'] == j)][['xcoord','ycoord']].values) # could also just be all non-zeroes that month
+        #Xu.set_value(df[(df['pg_id'].isin(sample_pr_id)) & (df['month_id'] == j)][['xcoord','ycoord']].values)
  
         y_ = gp.marginal_likelihood(f"y_{i}", X=X, Xu = Xu, y=y, noise= σ)
 
