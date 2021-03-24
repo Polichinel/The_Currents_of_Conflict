@@ -21,7 +21,8 @@ warnings.simplefilter("ignore", UserWarning)
 start_time = time.time()
 
 # get df:
-path = '/home/projects/ku_00017/data/generated/currents' 
+path = '/home/simon/Documents/Articles/conflict_prediction/data/ViEWS/'
+#path = '/home/projects/ku_00017/data/generated/currents' 
 file_name = 'ViEWS_coord.pkl'
 df = get_views_coord(path = path, file_name = file_name)
 print('Got df')
@@ -63,8 +64,8 @@ with pm.Model() as model:
     # GP
     gp = pm.gp.MarginalSparse(mean_func=mean ,cov_func=cov)
  
-    # always prudent:
-    df_sorted = df.sort_values(['pg_id', 'month_id'])
+    # always prudent
+    #df_sorted = df.sort_values(['pg_id', 'month_id'])
 
     #shared
     coord_len = df.groupby(['xcoord', 'ycoord']).sum().shape[0]
@@ -73,18 +74,18 @@ with pm.Model() as model:
 
     # this does not vary here:
     Xu = theano.shared(df[(df['id'].isin(sample_pr_id))][['xcoord','ycoord']].values, 'Xu')
-    #Xu = df[(df['id'].isin(sample_pr_id))][['xcoord','ycoord']].values
 
     # loop
-    month_ids = df[df['id'].isin(train_id)]['month_id'].unique()[:5] # note
+    month_ids = df[df['id'].isin(train_id)]['month_id'].unique()
     n = month_ids.shape[0]
 
     for i, j in enumerate(month_ids):
         print(f'{i+1}/{n} (estimation)', end='\r')       
 
-        y.set_value(np.log(df[df['month_id'] == j]['ged_best_sb'].values + 1))
-        X.set_value(df[df['month_id'] == j][['xcoord','ycoord']].values)
-
+        y.set_value(np.log(df[(df['id'].isin(train_id)) & (df['month_id'] == j)]['ged_best_sb'].values + 1))
+        X.set_value(df[(df['id'].isin(train_id))  & (df['month_id'] == j)][['xcoord','ycoord']].values)
+        Xu.set_value(df[(df['pg_id'].isin(sample_pr_id)) & (df['month_id'] == j)][['xcoord','ycoord']].values) # could also just be all non-zeroes that month
+ 
         y_ = gp.marginal_likelihood(f"y_{i}", X=X, Xu = Xu, y=y, noise= σ)
 
     mp = pm.find_MAP()
@@ -95,7 +96,8 @@ sce_mp_df = pd.DataFrame({"Parameter": ["ℓ", "η", "σ"],
                        "Value at MAP": [float(mp["ℓ"]), float(mp["η"]), float(mp["σ"])]}) 
 
 print('Pickling..')
-new_file_name = '/home/projects/ku_00017/data/generated/currents/sce_mp_df.pkl'
+#new_file_name = '/home/projects/ku_00017/data/generated/currents/sce_mp_df.pkl'
+new_file_name = '/home/simon/Documents/Articles/conflict_prediction/data/ViEWS/sce_mp_df.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(sce_mp_df, output)
 output.close()
