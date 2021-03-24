@@ -77,7 +77,7 @@ with pm.Model() as model:
     Xu = theano.shared(df[(df['id'].isin(sample_pr_id))][['xcoord','ycoord']].values, 'Xu')
 
     # loop
-    month_ids = df[df['id'].isin(train_id)]['month_id'].unique()
+    month_ids = df[df['id'].isin(train_id)]['month_id'].unique()[:5]
     n = month_ids.shape[0]
 
     for i, j in enumerate(month_ids):
@@ -92,15 +92,12 @@ with pm.Model() as model:
     mp = pm.find_MAP()
 print('Got mp')
 
-# put it into a df for order - can always go back
-sce_mp_df = pd.DataFrame({"Parameter": ["ℓ", "η", "σ"],
-                       "Value at MAP": [float(mp["ℓ"]), float(mp["η"]), float(mp["σ"])]}) 
 
 print('Pickling..')
-new_file_name = '/home/projects/ku_00017/data/generated/currents/sce_mp_df.pkl'
-#new_file_name = '/home/simon/Documents/Articles/conflict_prediction/data/ViEWS/sce_mp_df.pkl'
+new_file_name = '/home/projects/ku_00017/data/generated/currents/sce_mp.pkl'
+#new_file_name = '/home/simon/Documents/Articles/conflict_prediction/data/ViEWS/sce_mp.pkl'
 output = open(new_file_name, 'wb')
-pickle.dump(sce_mp_df, output)
+pickle.dump(mp, output)
 output.close()
 
 # end timer
