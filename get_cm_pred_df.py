@@ -43,11 +43,10 @@ train_id, val_id = test_val_train(df, test_time= True)
 print('Got train/val ids')
 
 # get pkl mp
-#path = open('/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/sce_mp.pkl', 'rb')
-path = open('/home/projects/ku_00017/data/generated/currents/sce_mp.pkl', 'rb')
-sce_mp = pickle.load(path)
+path = open('/home/projects/ku_00017/data/generated/currents/cm_mp.pkl', 'rb')
+cm_mp = pickle.load(path)
 path.close()
-print(f"got mp: ℓ:{sce_mp['ℓ']}, η:{sce_mp['η']}, σ:{sce_mp['σ']}"
+print(f"got mp: ℓ_l:{cm_mp['ℓ_l']}, η_l:{cm_mp['η_l']}, ℓ_s:{cm_mp['ℓ_s']}, η_s:{cm_mp['η_s']}, σ:{cm_mp['σ']}")
 
 # Getting hps
 hps = get_hyper_priors(plot = False)
@@ -100,7 +99,7 @@ with pm.Model() as model:
     # sample:
     for i, j in enumerate(sample_pr_id):
 
-        print(f'Time-line {i+1}/{sample_pr_id.shape[0], end = '\r'} in the works (building the model)...') 
+        print(f'Time-line {i+1}/{sample_pr_id.shape[0]} in the works (building the model)...', end = '\r') 
 
         X.set_value(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None])
         y.set_value(np.log(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values)
@@ -108,7 +107,7 @@ with pm.Model() as model:
         y_ = gp.marginal_likelihood(f'y_{i}', X=X, y=y, noise= σ)
     
 # Getting the predictions and merging with original df:
-cm_pred_df = predict(conf_type = conf_type, df = df, train_id = train_id, test_id = val_id, mp = mp, gp = gp, gp_s = gp_s, gp_l = gp_l, σ=σ, C=C_pred)
+cm_pred_df = predict(conf_type = conf_type, df = df, train_id = train_id, test_id = val_id, mp = cm_mp, gp = gp, gp_s = gp_s, gp_l = gp_l, σ=σ, C=C_pred)
 
 print('Pickling...')
 new_file_name = '/home/projects/ku_00017/data/generated/currents/cm_pred_df.pkl'
