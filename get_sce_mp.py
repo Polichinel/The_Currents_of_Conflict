@@ -21,8 +21,8 @@ warnings.simplefilter("ignore", UserWarning)
 start_time = time.time()
 
 # get df:
-path = '/home/simon/Documents/Articles/conflict_prediction/data/ViEWS/'
-#path = '/home/projects/ku_00017/data/generated/currents' 
+#path = '/home/simon/Documents/Articles/conflict_prediction/data/ViEWS/'
+path = '/home/projects/ku_00017/data/generated/currents' 
 file_name = 'ViEWS_coord.pkl'
 df = get_views_coord(path = path, file_name = file_name)
 print('Got df')
@@ -45,12 +45,13 @@ conf_type = 'ged_best_sb'
 
 print(f'{C_est}_{conf_type}')
 
+# given new results it might actually be two trend...
 with pm.Model() as model:
 
     # Hyper priors
     ℓ = pm.Gamma("ℓ", alpha=ℓ_alpha , beta=ℓ_beta)
     η = pm.HalfCauchy("η", beta=η_beta)
-    cov = η **2 * pm.gp.cov.ExpQuad(2, ℓ) # Cov func.
+    cov = η **2 * pm.gp.cov.Matern32(2, ℓ) # Cov func.
 
     # noise model
     σ = pm.HalfCauchy("σ", beta=σ_beta)
@@ -96,8 +97,8 @@ sce_mp_df = pd.DataFrame({"Parameter": ["ℓ", "η", "σ"],
                        "Value at MAP": [float(mp["ℓ"]), float(mp["η"]), float(mp["σ"])]}) 
 
 print('Pickling..')
-#new_file_name = '/home/projects/ku_00017/data/generated/currents/sce_mp_df.pkl'
-new_file_name = '/home/simon/Documents/Articles/conflict_prediction/data/ViEWS/sce_mp_df.pkl'
+new_file_name = '/home/projects/ku_00017/data/generated/currents/sce_mp_df.pkl'
+#new_file_name = '/home/simon/Documents/Articles/conflict_prediction/data/ViEWS/sce_mp_df.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(sce_mp_df, output)
 output.close()
