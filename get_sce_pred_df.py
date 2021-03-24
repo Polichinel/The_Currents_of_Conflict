@@ -93,7 +93,7 @@ with pm.Model() as model:
     Xu = theano.shared(np.zeros([nnz, 2]), 'Xu')
 
     # loop
-    month_ids = df[df['id'].isin(train_id)]['month_id'].unique()[:5]
+    month_ids = df[df['id'].isin(train_id)]['month_id'].unique()
     n = month_ids.shape[0]
 
     for i, j in enumerate(month_ids):
