@@ -23,8 +23,8 @@ warnings.simplefilter("ignore", UserWarning)
 start_time = time.time()
 
 # get df:
-path = '/home/simon/Documents/Articles/conflict_prediction/data/ViEWS/'
-#path = '/home/projects/ku_00017/data/generated/currents/'
+#path = '/home/simon/Documents/Articles/conflict_prediction/data/ViEWS/'
+path = '/home/projects/ku_00017/data/generated/currents/'
 file_name = 'ViEWS_coord.pkl'
 df = get_views_coord(path = path, file_name = file_name)
 print('got df')
@@ -34,8 +34,8 @@ train_id, val_id = test_val_train(df)
 print('got split')
 
 # get pkl mp
-pkl_file = open('/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/sce_mp.pkl', 'rb')
-#path = '/home/projects/ku_00017/data/generated/currents/sce_mp.pkl'
+#pkl_file = open('/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/sce_mp.pkl', 'rb')
+path = '/home/projects/ku_00017/data/generated/currents/sce_mp.pkl'
 sce_mp = pickle.load(pkl_file)
 pkl_file.close()
 sce_mp
@@ -125,8 +125,8 @@ log_best_col = np.array(log_best_list).reshape(-1,)
 sce_pred_df = pd.DataFrame({'mu': mu_col, 'var':  var_col, 'month_id': month_col, 'xcoord': xcoord_col, 'ycoord': ycoord_col, 'log_best': log_best_col})
 
 print('Pickling..')
-#new_file_name = '/home/projects/ku_00017/data/generated/currents/sce_pred_df.pkl'
-new_file_name = '/home/simon/Documents/Articles/conflict_prediction/data/ViEWS/sce_pred_df.pkl'
+new_file_name = '/home/projects/ku_00017/data/generated/currents/sce_pred_df.pkl'
+#new_file_name = '/home/simon/Documents/Articles/conflict_prediction/data/ViEWS/sce_pred_df.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(sce_pred_df, output)
 output.close()
