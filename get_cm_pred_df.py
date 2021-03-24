@@ -24,7 +24,7 @@ warnings.simplefilter("ignore", UserWarning)
 start_time = time.time()
 
 # minimum number of conf in timeslines predicted. C = 0 for full run
-C_pred = 1# 100
+C_pred = 0
 
 # minimum number of conf in one year in timeslines used to est hyper parameters
 C_est = 8
@@ -107,7 +107,7 @@ with pm.Model() as model:
         y_ = gp.marginal_likelihood(f'y_{i}', X=X, y=y, noise= σ)
     
 # Getting the predictions and merging with original df:
-print('Begins prediction')
+print('\nBegins prediction...')
 cm_pred_df = predict(conf_type = conf_type, df = df, train_id = train_id, test_id = val_id, mp = cm_mp, gp = gp, gp_s = gp_s, gp_l = gp_l, σ=σ, C=C_pred)
 
 print('Pickling...')
