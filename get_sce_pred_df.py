@@ -35,7 +35,7 @@ print('got split')
 
 # get pkl mp
 #path = open('/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/sce_mp.pkl', 'rb')
-path = '/home/projects/ku_00017/data/generated/currents/sce_mp.pkl'
+path = open('/home/projects/ku_00017/data/generated/currents/sce_mp.pkl', 'rb')
 sce_mp = pickle.load(path)
 path.close()
 sce_mp
