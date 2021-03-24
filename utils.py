@@ -220,10 +220,10 @@ def get_spatial_hps(plot = False):
 
     """Get the one trend spetial prior"""
 
-    η_beta = 1
+    η_beta = 5
     ℓ_beta = 1
     ℓ_alpha = 4
-    σ_beta = 3
+    σ_beta = 1
 
     grid = np.linspace(0,15,1000)
     priors = [
@@ -284,8 +284,7 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, indv_me
     # Loop gp predict over time lines
     for i, j in enumerate(sample_pg_id):
 
-        print(f'Time-line {i+1}/{sample_pg_id.shape[0]} in the works (prediction)...')
-        clear_output(wait=True)        
+        print(f'Time-line {i+1}/{sample_pg_id.shape[0]} in the works (prediction)...', end = 'r')
 
         idx = df_sorted[(df_sorted['id'].isin(new_id)) & (df_sorted['pg_id'] == j)]['id'].values
         y_new = np.log(df_sorted[(df_sorted['id'].isin(new_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values

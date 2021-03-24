@@ -38,8 +38,6 @@ print('got split')
 path = open('/home/projects/ku_00017/data/generated/currents/sce_mp.pkl', 'rb')
 sce_mp = pickle.load(path)
 path.close()
-sce_mp
-
 print(f"got mp: ℓ:{sce_mp['ℓ']}, η:{sce_mp['η']}, σ:{sce_mp['σ']}")
 
 # get hps and run gp
