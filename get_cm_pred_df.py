@@ -107,6 +107,7 @@ with pm.Model() as model:
         y_ = gp.marginal_likelihood(f'y_{i}', X=X, y=y, noise= σ)
     
 # Getting the predictions and merging with original df:
+print('Begins prediction')
 cm_pred_df = predict(conf_type = conf_type, df = df, train_id = train_id, test_id = val_id, mp = cm_mp, gp = gp, gp_s = gp_s, gp_l = gp_l, σ=σ, C=C_pred)
 
 print('Pickling...')
