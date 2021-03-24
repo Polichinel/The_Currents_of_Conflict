@@ -38,12 +38,15 @@ print("Got hyper priors")
 # -------------------------------------------------------------------------------------------------------------
 
 # minimum number of conf in one year for timeslines to be used to est hyper parameters
-C_est = 8
+#C_est = 8
+
+# the n most conflict experiencing cells that month.
+nnz = 60 # 100% arbitrary
 
 # conflict type.
 conf_type = 'ged_best_sb'
 
-print(f'{C_est}_{conf_type}')
+print(f'{nnz}_{conf_type}')
 
 # given new results it might actually be two trend...
 with pm.Model() as model:
@@ -60,7 +63,7 @@ with pm.Model() as model:
     mean =  pm.gp.mean.Zero()
 
     # sample and split X,y ---------------------------------------------  
-    sample_pr_id = sample_conflict_timeline(conf_type = conf_type, df = df, train_id = train_id, test_id = val_id, C = C_est)
+    #sample_pr_id = sample_conflict_timeline(conf_type = conf_type, df = df, train_id = train_id, test_id = val_id, C = C_est)
 
     # GP
     gp = pm.gp.MarginalSparse(mean_func=mean ,cov_func=cov)
@@ -74,7 +77,8 @@ with pm.Model() as model:
     X = theano.shared(np.zeros([coord_len, 2]), 'X')
 
     # this does not vary here:
-    Xu = theano.shared(df[(df['id'].isin(sample_pr_id))][['xcoord','ycoord']].values, 'Xu')
+    #Xu = theano.shared(df[(df['id'].isin(sample_pr_id))][['xcoord','ycoord']].values, 'Xu')
+    Xu = theano.shared(np.zeros([nnz, 2]), 'Xu')
 
     # loop
     month_ids = df[df['id'].isin(train_id)]['month_id'].unique()
@@ -85,7 +89,9 @@ with pm.Model() as model:
 
         y.set_value(np.log(df[(df['id'].isin(train_id)) & (df['month_id'] == j)]['ged_best_sb'].values + 1))
         X.set_value(df[(df['id'].isin(train_id))  & (df['month_id'] == j)][['xcoord','ycoord']].values)
-        Xu.set_value(df[(df['pg_id'].isin(sample_pr_id)) & (df['month_id'] == j)][['xcoord','ycoord']].values) # could also just be all non-zeroes that month
+        Xu.set_value(df[df['month_id'] == j].sort_values('ged_best_sb', ascending = False)[:nnz][['xcoord','ycoord']].values) # could also just be all non-zeroes that month
+
+        #Xu.set_value(df[(df['pg_id'].isin(sample_pr_id)) & (df['month_id'] == j)][['xcoord','ycoord']].values) # could also just be all non-zeroes that month
  
         y_ = gp.marginal_likelihood(f"y_{i}", X=X, Xu = Xu, y=y, noise= σ)
 
