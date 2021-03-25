@@ -62,7 +62,7 @@ with pm.Model() as model:
     # short Hyper priors
     ℓ_s = pm.Gamma("ℓ_s", alpha=ℓ_s_alpha , beta=ℓ_s_beta)
     η_s = pm.HalfCauchy("η_s", beta=η_s_beta)
-    cov_s = η_s **2 * pm.gp.cov.Matern32(2, ℓ_s) # Cov func.
+    cov_s = η_s **2 * pm.gp.cov.ExpQuad(2, ℓ_s) # Cov func.
 
     # short GP
     gp_s = pm.gp.MarginalSparse(cov_func=cov_s)
