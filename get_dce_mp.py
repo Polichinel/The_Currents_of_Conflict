@@ -10,14 +10,13 @@ import time
 from IPython.display import clear_output
 
 # some prob need fitting now... 
-from utils_sce import get_views_coord
-from utils_sce import test_val_train
-from utils_sce import sample_conflict_timeline
-from utils_sce import get_hyper_priors
-from utils_sce import predict
-from utils_sce import plot_predictions
-from utils_sce import get_mse
-from utils_sce import get_metrics
+from utils_dce import get_views_coord
+from utils_dce import test_val_train
+from utils_dce import sample_conflict_timeline
+from utils_dce import get_hyper_priors
+from utils_dce import predict
+from utils_dce import get_mse
+from utils_dce import get_metrics
 
 import pymc3 as pm
 import theano
