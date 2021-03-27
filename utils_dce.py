@@ -115,7 +115,7 @@ def sample_conflict_timeline(conf_type, df, train_id, test_id, C=12):
     # sort the df - just in case
     df_sorted = df.sort_values(['pg_id', 'month_id'])
 
-    df_sorted['new_dummy'] =  (df_sorted[conf_type] > 0)*1
+    df_sorted['new_dummy'] =  (df_sorted[conf_type] > 1)*1 # temp! test! stuff!
 
     # groupby gids and get total events
     df_sum = df_sorted.groupby(['pg_id', 'year']).sum()[['new_dummy']].reset_index()
