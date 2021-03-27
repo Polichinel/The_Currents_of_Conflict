@@ -335,14 +335,14 @@ def get_metrics(df_merged, train_id, test_id):
     # some merge.
     df_merged2 = pd.merge(df_merged, cm_pred_df, how = 'left', on = ['id', 'pg_id'])
 
-    feature_set = [['dce_mu', 'dce_mu_slope', 'dce_mu_acc', 'dce_mu_mass',
-                    'dce_mu_s', 'dce_mu_s_slope','dce_mu_s_acc', 'dce_mu_s_mass',
-                    'dce_mu_l', 'dce_mu_l_slope', 'dce_mu_l_acc', 'dce_mu_l_mass',
-                    'dce_var', 'dce_var_s', 'dce_var_l', 
-                    'cm_mu', 'cm_mu_slope', 'cm_mu_acc', 'cm_mu_mass',
-                    'cm_mu_s', 'cm_mu_s_slope', 'cm_mu_s_acc', 'cm_mu_s_mass',
-                    'cm_mu_l', 'cm_mu_l_slope', 'cm_mu_l_acc', 'cm_mu_l_mass',
-                    'cm_var', 'cm_var_s', 'var_l']]
+    feature_set = ['dce_mu', 'dce_mu_slope', 'dce_mu_acc', 'dce_mu_mass',
+                   'dce_mu_s', 'dce_mu_s_slope','dce_mu_s_acc', 'dce_mu_s_mass',
+                   'dce_mu_l', 'dce_mu_l_slope', 'dce_mu_l_acc', 'dce_mu_l_mass',
+                   'dce_var', 'dce_var_s', 'dce_var_l', 
+                   'cm_mu', 'cm_mu_slope', 'cm_mu_acc', 'cm_mu_mass',
+                   'cm_mu_s', 'cm_mu_s_slope', 'cm_mu_s_acc', 'cm_mu_s_mass',
+                   'cm_mu_l', 'cm_mu_l_slope', 'cm_mu_l_acc', 'cm_mu_l_mass',
+                   'cm_var', 'cm_var_s', 'var_l']
 
     X_train = df_merged2[df_merged2['id'].isin(train_id)][feature_set] 
     
