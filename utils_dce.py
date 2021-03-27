@@ -342,7 +342,7 @@ def get_metrics(df_merged, train_id, test_id):
                    'cm_mu', 'cm_mu_slope', 'cm_mu_acc', 'cm_mu_mass',
                    'cm_mu_s', 'cm_mu_s_slope', 'cm_mu_s_acc', 'cm_mu_s_mass',
                    'cm_mu_l', 'cm_mu_l_slope', 'cm_mu_l_acc', 'cm_mu_l_mass',
-                   'cm_var', 'cm_var_s', 'var_l']
+                   'cm_var', 'cm_var_s', 'cm_var_l']
 
     X_train = df_merged2[df_merged2['id'].isin(train_id)][feature_set] 
     
