@@ -58,7 +58,7 @@ out_dict = {}
 C_pred = 100 #0
 
 # minimum number of conf in one year in timeslines used to est hyper parameters
-C_est = 12 # 8
+C_est = 8 # 8
 
 # conflict type. Som might need lower c_est than 100 to work
 # so now this should be sce_mu - so you do not need to take log.
