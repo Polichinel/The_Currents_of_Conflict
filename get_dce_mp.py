@@ -139,8 +139,7 @@ with pm.Model() as model:
     # sample:
     for i, j in enumerate(sample_pr_id):
 
-        print(f'Time-line {i+1}/{sample_pr_id.shape[0]} in the works (estimation)...') 
-        clear_output(wait=True)
+        print(f'Time-line {i+1}/{sample_pr_id.shape[0]} in the works (estimation)...', end= '\r') 
 
         X.set_value(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None])
         y.set_value(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type].values)

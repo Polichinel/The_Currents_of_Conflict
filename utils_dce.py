@@ -122,7 +122,7 @@ def sample_conflict_timeline(conf_type, df, train_id, test_id, C=12):
     #df_sb_total_events = df.groupby(['pg_id']).sum()[dummy].reset_index().rename(columns = {dummy:'ged_total_events'})
      #sample_pr_id = df_sb_total_events[df_sb_total_events['ged_total_events'] >= C]['pg_id'].unique()
    
-    df_sum = df.groupby(['pg_id', 'year']).sum()[[dummy]].reset_index()
+    df_sum = df_sorted.groupby(['pg_id', 'year']).sum()[[dummy]].reset_index()
     sample_pr_id = df_sum[df_sum[dummy] >= C]['pg_id'].unique()
 
     return(sample_pr_id)
@@ -178,7 +178,6 @@ def get_hyper_priors(plot = True, η_beta_s = 0.5, ℓ_beta_s = 0.8, ℓ_alpha_s
     return(hps)
 
 
-
 def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, indv_mean = False):
 
     """This function takes the mp, gps and σ for a two-trend implimentation.
@@ -207,7 +206,7 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, indv_me
     var_s_list = []
     var_l_list = []
     X_new_list = []
-    y_new_list = []
+    #y_new_list = []
     idx_list = []
     pg_idx_list = []
     train_list = []
@@ -218,7 +217,9 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, indv_me
         print(f'Time-line {i+1}/{sample_pg_id.shape[0]} in the works (prediction)...', end = '\r')
 
         idx = df_sorted[(df_sorted['id'].isin(new_id)) & (df_sorted['pg_id'] == j)]['id'].values
-        y_new = df_sorted[(df_sorted['id'].isin(new_id)) & (df_sorted['pg_id'] == j)][conf_type].values
+        #y_new = df_sorted[(df_sorted['id'].isin(new_id)) & (df_sorted['pg_id'] == j)][conf_type].values
+
+
 
         X.set_value(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None])
         y.set_value(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type].values)
@@ -234,7 +235,7 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, indv_me
         var_s_list.append(var_s)
         var_l_list.append(var_l)
         X_new_list.append(X_new)
-        y_new_list.append(y_new)
+        #y_new_list.append(y_new)
         idx_list.append(idx)
         pg_idx_list.append([j] * mu.shape[0])
         train_list.append(np.array([1] * train_len + [0] * test_len)) # dummy for training...
@@ -246,17 +247,17 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, indv_me
     var_s_col = np.array(var_s_list).reshape(-1,) 
     var_l_col = np.array(var_l_list).reshape(-1,) 
     X_new_col = np.array(X_new_list).reshape(-1,) 
-    y_new_col = np.array(y_new_list).reshape(-1,)     
+    #y_new_col = np.array(y_new_list).reshape(-1,)     
     idx_col = np.array(idx_list).reshape(-1,)    
     pg_idx_col = np.array(pg_idx_list).reshape(-1,)
     train_col =  np.array(train_list).reshape(-1,)
 
     df_new = pd.DataFrame({
-                            'mu': mu_col, 'mu_s' : mu_s_col, 'mu_l' : mu_l_col,
+                           'mu': mu_col, 'mu_s' : mu_s_col, 'mu_l' : mu_l_col,
                             'var' : var_col, 'var_s' : var_s_col, 'var_l' : var_l_col, 
-                            'X' : X_new_col, 'y' : y_new_col , 
+                            'X' : X_new_col, 
                             'id' : idx_col, 'pg_id' : pg_idx_col, 'train' : train_col
-                            })
+                            }) #  'y' : y_new_col ,
 
     return(df_new)
 
@@ -270,7 +271,7 @@ def get_mse(df_merged, train_id, test_id):
 
     # iterate over time lines - we would like a distribution of mse
 
-    y_true_train = df_merged[df_merged['id'].isin(train_id)]['y']
+    y_true_train = np.log(df_merged[df_merged['id'].isin(train_id)]['ged_best_sb'] + 1)
     pred_train = df_merged[df_merged['id'].isin(train_id)]['dce_mu']
     pred_s_train = df_merged[df_merged['id'].isin(train_id)]['dce_mu_s']
     pred_l_train = df_merged[df_merged['id'].isin(train_id)]['dce_mu_l']
@@ -279,7 +280,7 @@ def get_mse(df_merged, train_id, test_id):
     mse_s_train = mean_squared_error(y_true_train, pred_s_train)
     mse_l_train = mean_squared_error(y_true_train, pred_l_train)
 
-    y_true_test = df_merged[df_merged['id'].isin(test_id)]['y']
+    y_true_test = np.log(df_merged[df_merged['id'].isin(test_id)]['ged_best_sb'] + 1)
     pred_test = df_merged[df_merged['id'].isin(test_id)]['dce_mu']
     pred_s_test = df_merged[df_merged['id'].isin(test_id)]['dce_mu_s']
     pred_l_test = df_merged[df_merged['id'].isin(test_id)]['dce_mu_l']
@@ -385,11 +386,11 @@ def get_metrics_ot(df_merged, train_id, test_id):
 
     X_train = df_merged[df_merged['id'].isin(train_id)][['mu', 'mu_slope', 'mu_acc', 'mu_mass', 'var']] 
     
-    y_train = (df_merged[df_merged['id'].isin(train_id)]['y'] > 0) * 1
+    y_train = (df_merged[df_merged['id'].isin(train_id)]['ged_best_sb'] > 0) * 1
 
     X_test = df_merged[df_merged['id'].isin(test_id)][['mu', 'mu_slope', 'mu_acc','mu_mass','var']]
 
-    y_test = (df_merged[df_merged['id'].isin(test_id)]['y'] > 0) * 1
+    y_test = (df_merged[df_merged['id'].isin(test_id)]['ged_best_sb'] > 0) * 1
 
     # totally vanilla - just indicative
     model = RandomForestClassifier(n_estimators=64, max_depth=6, min_samples_split=8, random_state=42, n_jobs= -1)
