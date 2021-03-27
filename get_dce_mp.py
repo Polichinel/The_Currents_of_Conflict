@@ -170,7 +170,7 @@ else:
 # might be a problem here.. both with log and conf_type. Check utils
 df_new = predict(conf_type = conf_type, df = df, train_id = train_id, test_id = val_id, mp = mp, gp = gp, gp_s = gp_s, gp_l = gp_l, σ=σ, C=C_pred)
 
-df_merged = pd.merge(df_new, df[['id', 'pg_id','year','gwcode', 'xcoord', 'ycoord','ged_best_sb','ged_best_ns', 'ged_best_os', 'ged_best']], how = 'left', on = ['id', 'pg_id'])
+df_merged = pd.merge(df_new, df[['id', 'pg_id','year','gwcode', 'xcoord', 'ycoord','ged_best_sb']], how = 'left', on = ['id', 'pg_id'])
 
 df_merged.rename(columns =  {'mu' : 'dce_mu', 'var': 'dce_var', 
                              'mu_s' : 'dce_mu_s', 'var_s': 'dce_var_s', 
