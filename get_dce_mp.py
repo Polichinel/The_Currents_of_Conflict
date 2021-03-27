@@ -55,10 +55,10 @@ df.rename(columns =  {'mu' : 'sce_mu', 'var': 'sce_var'}, inplace=True)
 out_dict = {}
 
 # minimum number of conf in timeslines predicted. C = 0 for full run
-C_pred = 100 #1 # 100
+C_pred = 1 # 100
 
 # minimum number of conf in one year in timeslines used to est hyper parameters
-C_est = 100 #8
+C_est = 8
 
 # conflict type. Som might need lower c_est than 100 to work
 # so now this should be sce_mu - so you do not need to take log.
@@ -72,7 +72,7 @@ start_time = time.time()
 
 # So, here is the thing. you only have trian in df_merge right now....
 # get train and validation id:
-train_id, val_id = test_val_train(df, test_time= True)
+train_id, val_id = test_val_train(df, test_time= False)
 
 print(f"{C_est}_{C_pred}_{conf_type}_{s_kernel}\n")
 
