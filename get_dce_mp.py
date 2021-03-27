@@ -41,7 +41,7 @@ file_name = 'ViEWS_coord.pkl'
 df_views_coord = get_views_coord(path = path, file_name = file_name)
 
 # Notice: so you get all obs now but naturally mu etc. is only there for the set used in get_sce_pred_df
-df = pd.merge(sce_pred_df, df_views_coord[['id', 'pg_id', 'month_id', 'month', 'year','gwcode', 'xcoord', 'ycoord','ged_best_sb','ged_best_ns', 'ged_best_os', 'ged_best']],how = 'outer', on = ['month_id', 'xcoord', 'ycoord'])
+df = pd.merge(sce_pred_df, df_views_coord[['id', 'pg_id', 'month_id', 'month', 'year','gwcode', 'xcoord', 'ycoord','ged_best_sb', 'ged_dummy_sb']],how = 'outer', on = ['month_id', 'xcoord', 'ycoord'])
 df.rename(columns =  {'mu' : 'sce_mu', 'var': 'sce_var'}, inplace=True)
 
 # ---------------------------------------------------------------------------------------
