@@ -106,62 +106,20 @@ def test_val_train(df, info = True, test_time = False):
         return(train_id, test_id)
 
 
-def sample_conflict_timeline_old(conf_type, df, train_id, test_id, C=5):
-
-    """ This function samples N time-lines contining c>=C conflicts. 
-    As default it will try to get the val_id. Error will come if it does not exits"""
-
-    #Set the dummy corrospoding to the conflcit type
-    if conf_type == 'ged_best_sb':
-        dummy = 'ged_dummy_sb'
-
-    elif conf_type == 'ged_best_ns':
-        dummy = 'ged_dummy_ns'
-
-    elif conf_type == 'ged_best_os':
-        dummy = 'ged_dummy_os'
-
-    elif conf_type == 'ged_best':
-        dummy = 'ged_dummy'
-
-    # sort the df - just in case
-    df_sorted = df.sort_values(['pg_id', 'month_id'])
-
-    # groupby gids and get total events
-    df_sb_total_events = df.groupby(['pg_id']).sum()[dummy].reset_index().rename(columns = {dummy:'ged_total_events'})
-    
-    sample_pr_id = df_sb_total_events[df_sb_total_events['ged_total_events'] >= C]['pg_id'].unique()
-
-    return(sample_pr_id)
-
 
 def sample_conflict_timeline(conf_type, df, train_id, test_id, C=12):
 
     """This function samples N time-lines contining C >= conflicts in at least one year.
     Default C = 12, so that is one year with a conflict each day."""
 
-    #Set the dummy corrospoding to the conflcit type
-    if conf_type == 'ged_best_sb':
-        dummy = 'ged_dummy_sb'
-
-    elif conf_type == 'ged_best_ns':
-        dummy = 'ged_dummy_ns'
-
-    elif conf_type == 'ged_best_os':
-        dummy = 'ged_dummy_os'
-
-    elif conf_type == 'ged_best':
-        dummy = 'ged_dummy'
-
     # sort the df - just in case
     df_sorted = df.sort_values(['pg_id', 'month_id'])
 
+    df_sorted['new_dummy'] =  (df_sorted[conf_type] > 0)*1
+
     # groupby gids and get total events
-    #df_sb_total_events = df.groupby(['pg_id']).sum()[dummy].reset_index().rename(columns = {dummy:'ged_total_events'})
-     #sample_pr_id = df_sb_total_events[df_sb_total_events['ged_total_events'] >= C]['pg_id'].unique()
-   
-    df_sum = df_sorted.groupby(['pg_id', 'year']).sum()[[dummy]].reset_index()
-    sample_pr_id = df_sum[df_sum[dummy] >= C]['pg_id'].unique()
+    df_sum = df_sorted.groupby(['pg_id', 'year']).sum()[['new_dummy']].reset_index()
+    sample_pr_id = df_sum[df_sum['new_dummy'] >= C]['pg_id'].unique()
 
     return(sample_pr_id)
 
