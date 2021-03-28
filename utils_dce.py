@@ -348,7 +348,7 @@ def get_metrics(df_merged, train_id, test_id):
     
     y_train = (df_merged2[df_merged2['id'].isin(train_id)]['y'] > 0) * 1
 
-    X_test = df_merged2[df_merged2['id'].isin(test_id)][[feature_set]]
+    X_test = df_merged2[df_merged2['id'].isin(test_id)][feature_set]
 
     y_test = (df_merged2[df_merged2['id'].isin(test_id)]['y'] > 0) * 1
 
