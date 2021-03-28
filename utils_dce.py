@@ -346,11 +346,11 @@ def get_metrics(df_merged, train_id, test_id):
 
     X_train = df_merged2[df_merged2['id'].isin(train_id)][feature_set] 
     
-    y_train = (df_merged2[df_merged2['id'].isin(train_id)]['y'] > 0) * 1
+    y_train = (df_merged2[df_merged2['id'].isin(train_id)]['ged_best_sb'] > 0) * 1
 
     X_test = df_merged2[df_merged2['id'].isin(test_id)][feature_set]
 
-    y_test = (df_merged2[df_merged2['id'].isin(test_id)]['y'] > 0) * 1
+    y_test = (df_merged2[df_merged2['id'].isin(test_id)]['ged_best_sb'] > 0) * 1
 
 
     # totally vanilla - just indicative
