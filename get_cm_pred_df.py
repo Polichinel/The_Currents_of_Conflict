@@ -39,7 +39,7 @@ df = get_views_coord(path = path, file_name = file_name)
 print('Got df')
 
 # get train and validation id:
-train_id, val_id = test_val_train(df, test_time= True)
+train_id, val_id = test_val_train(df, test_time = False)
 print('Got train/val ids')
 
 # get pkl mp
