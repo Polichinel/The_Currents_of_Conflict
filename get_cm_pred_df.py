@@ -24,7 +24,7 @@ warnings.simplefilter("ignore", UserWarning)
 start_time = time.time()
 
 # minimum number of conf in timeslines predicted. C = 0 for full run
-C_pred = 0
+C_pred = 1
 
 # minimum number of conf in one year in timeslines used to est hyper parameters
 C_est = 8
@@ -111,7 +111,7 @@ print('\nBegins prediction...')
 cm_pred_df = predict(conf_type = conf_type, df = df, train_id = train_id, test_id = val_id, mp = cm_mp, gp = gp, gp_s = gp_s, gp_l = gp_l, σ=σ, C=C_pred)
 
 print('Pickling...')
-new_file_name = '/home/projects/ku_00017/data/generated/currents/cm_pred_df.pkl'
+new_file_name = '/home/projects/ku_00017/data/generated/currents/valtime_cm_pred_df.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(cm_pred_df, output)
 output.close()
