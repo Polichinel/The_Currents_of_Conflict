@@ -145,14 +145,6 @@ df_merged['dce_mu_slope'] = df_merged.groupby('pg_id')['dce_mu'].transform(np.gr
 df_merged['dce_mu_acc'] = df_merged.groupby('pg_id')['dce_mu_slope'].transform(np.gradient)
 df_merged['dce_mu_mass'] = df_merged.groupby('pg_id')['dce_mu'].transform(np.cumsum)
 
-df_merged['dce_mu_s_slope'] = df_merged.groupby('pg_id')['dce_mu_s'].transform(np.gradient)
-df_merged['dce_mu_s_acc'] = df_merged.groupby('pg_id')['dce_mu_s_slope'].transform(np.gradient)
-df_merged['dce_mu_s_mass'] = df_merged.groupby('pg_id')['dce_mu_s'].transform(np.cumsum)
-
-df_merged['dce_mu_l_slope'] = df_merged.groupby('pg_id')['dce_mu_l'].transform(np.gradient)
-df_merged['dce_mu_l_acc'] = df_merged.groupby('pg_id')['dce_mu_l_slope'].transform(np.gradient)
-df_merged['dce_mu_l_mass'] = df_merged.groupby('pg_id')['dce_mu_l'].transform(np.cumsum)
-
 
 # Get classification results
 # also need new one here.
