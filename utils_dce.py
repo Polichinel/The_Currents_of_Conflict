@@ -475,9 +475,7 @@ def get_metrics_ot(df_merged, train_id, test_id):
     cm_pred_df = pickle.load(pkl_file)
     pkl_file.close()
 
-    cm_pred_df.rename(columns =  {'mu' : 'cm_mu', 'var': 'cm_var', 
-                                  'mu_s' : 'cm_mu_s', 'var_s': 'cm_var_s', 
-                                  'mu_l' : 'cm_mu_l', 'var_l': 'cm_var_l'}, inplace=True)   
+    cm_pred_df.rename(columns =  {'mu' : 'cm_mu', 'var': 'cm_var'}, inplace=True)   
 
     cm_pred_df.sort_values(['pg_id', 'X'], inplace= True)
     cm_pred_df['cm_mu_slope'] = cm_pred_df.groupby('pg_id')['cm_mu'].transform(np.gradient)
@@ -487,7 +485,7 @@ def get_metrics_ot(df_merged, train_id, test_id):
     # some merge.
     df_merged2 = pd.merge(df_merged, cm_pred_df, how = 'left', on = ['id', 'pg_id'])
 
-    feature_set = ['mu', 'mu_slope', 'mu_acc', 'mu_mass', 'var']
+    feature_set = ['cm_mu', 'cm_mu_slope', 'cm_mu_acc', 'cm_mu_mass', 'cm_var']
 
     X_train = df_merged2[df_merged2['id'].isin(train_id)][feature_set] 
     
