@@ -102,6 +102,7 @@ with pm.Model() as model:
     
     # find mp. Should be trace later.
     mp = pm.find_MAP()
+
 print('Got mp')
 
 print('Pickling..')
