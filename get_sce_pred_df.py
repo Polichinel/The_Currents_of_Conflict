@@ -7,10 +7,10 @@ import seaborn as sns
 import pickle
 import time
 
-from utils import get_views_coord
-from utils import test_val_train
-from utils import get_spatial_hps
-from utils import sample_conflict_timeline
+from utils_sce import get_views_coord
+from utils_sce import test_val_train
+from utils_sce import get_spatial_hps
+from utils_sce import sample_conflict_timeline
 
 import pymc3 as pm
 import theano
@@ -30,7 +30,7 @@ df = get_views_coord(path = path, file_name = file_name)
 print('got df')
 
 # get trian/test id
-train_id, val_id = test_val_train(df)
+train_id, val_id = test_val_train(df, test_time = False)
 print('got split')
 
 # get pkl mp
@@ -41,7 +41,7 @@ path.close()
 print(f"got mp: ℓ:{sce_mp['ℓ']}, η:{sce_mp['η']}, σ:{sce_mp['σ']}")
 
 # get hps and run gp
-η_beta, ℓ_beta, ℓ_alpha, σ_beta = get_spatial_hps(plot = False)
+η_beta, ℓ_beta, ℓ_alpha, σ_beta = get_spatial_hps()
 
 # Containers
 mu_list = []

@@ -6,10 +6,10 @@ import pandas as pd
 import pickle
 import time
 
-from utils import get_views_coord
-from utils import test_val_train
-from utils import sample_conflict_timeline
-from utils import get_spatial_hps
+from utils_sce import get_views_coord
+from utils_sce import test_val_train
+from utils_sce import sample_conflict_timeline
+from utils_sce import get_spatial_hps
 
 import pymc3 as pm
 import theano

@@ -6,10 +6,10 @@ import pandas as pd
 import pickle
 import time
 
-from utils import get_views_coord
-from utils import test_val_train
-from utils import sample_conflict_timeline
-from utils import get_hyper_priors
+from utils_cm import get_views_coord
+from utils_cm import test_val_train
+from utils_cm import sample_conflict_timeline
+from utils_cm import get_hyper_priors
 
 import pymc3 as pm
 import theano
@@ -31,7 +31,7 @@ train_id, val_id = test_val_train(df, test_time= False)
 print("Got train/val index")
 
 # Constuction the gps and getting the map
-hps = get_hyper_priors(plot = False)
+hps = get_hyper_priors()
 print("Got hyper priors")
 
 # -------------------------------------------------------------------------------------------------------------

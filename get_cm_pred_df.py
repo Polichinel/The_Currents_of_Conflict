@@ -8,11 +8,11 @@ import time
 
 from IPython.display import clear_output
 
-from utils import get_views_coord
-from utils import test_val_train
-from utils import sample_conflict_timeline
-from utils import get_hyper_priors
-from utils import predict
+from utils_cm import get_views_coord
+from utils_cm import test_val_train
+from utils_cm import sample_conflict_timeline
+from utils_cm import get_hyper_priors
+from utils_cm import predict
 
 import pymc3 as pm
 import theano
@@ -49,7 +49,7 @@ path.close()
 print(f"got mp: ℓ_l:{cm_mp['ℓ_l']}, η_l:{cm_mp['η_l']}, ℓ_s:{cm_mp['ℓ_s']}, η_s:{cm_mp['η_s']}, σ:{cm_mp['σ']}")
 
 # Getting hps
-hps = get_hyper_priors(plot = False)
+hps = get_hyper_priors()
 
 print(f"{C_est}_{C_pred}_{conf_type}_Matern32\n")
 
@@ -111,7 +111,7 @@ print('\nBegins prediction...')
 cm_pred_df = predict(conf_type = conf_type, df = df, train_id = train_id, test_id = val_id, mp = cm_mp, gp = gp, gp_s = gp_s, gp_l = gp_l, σ=σ, C=C_pred)
 
 print('Pickling...')
-new_file_name = '/home/projects/ku_00017/data/generated/currents/valtime_cm_pred_df.pkl'
+new_file_name = '/home/projects/ku_00017/data/generated/currents/cm_pred_df.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(cm_pred_df, output)
 output.close()
