@@ -285,7 +285,7 @@ def get_metrics(df_merged, train_id, test_id):
     Very simple classifier so results are only indicative"""
 
     # the cm_pred_df:
-    pkl_file = open('/home/projects/ku_00017/data/generated/currents/valtime_cm_pred_df.pkl', 'rb')
+    pkl_file = open('/home/projects/ku_00017/data/generated/currents/cm_pred_df.pkl', 'rb')
     cm_pred_df = pickle.load(pkl_file)
     pkl_file.close()
 
