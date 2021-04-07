@@ -78,7 +78,7 @@ print(f"{C_est}_{C_pred}_{conf_type}_{s_kernel}\n")
 
 
 # Constuction the gps and getting the map
-hps = get_hyper_priors(plot = False) # these might need some changing... 
+hps = get_hyper_priors() # these might need some changing... 
 
 with pm.Model() as model:
 

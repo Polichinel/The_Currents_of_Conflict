@@ -2,8 +2,6 @@ import os
 import numpy as np
 import pandas as pd
 import pymc3 as pm
-import matplotlib.pyplot as plt
-import seaborn as sns
 from sklearn.metrics import mean_squared_error
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import mean_squared_error
@@ -153,28 +151,6 @@ def get_hyper_priors(plot = True, η_beta_s = 0.5, ℓ_beta_s = 0.8, ℓ_alpha_s
     # noise prior
     hps['σ_beta'] = σ_beta
 
-    if plot == True:
-
-        # plot:
-        grid = np.linspace(0,64,1000)
-            
-        priors = [
-            ('η_prior_s', pm.HalfCauchy.dist(beta=hps['η_beta_s'])),
-            ('ℓ_prior_s', pm.Gamma.dist(alpha=hps['ℓ_alpha_s'] , beta=hps['ℓ_beta_s'])),
-            ('α_prior_s', pm.Gamma.dist(alpha=hps['α_alpha_s'], beta= hps['α_beta_s'])),
-            ('η_prior_l', pm.HalfCauchy.dist(beta=hps['η_beta_l'])),
-            ('ℓ_prior_l', pm.Gamma.dist(alpha=hps['ℓ_alpha_l'] , beta=hps['ℓ_beta_l'])),
-            ('σ', pm.HalfCauchy.dist(beta=hps['σ_beta']))]
-
-        plt.figure(figsize= [15,5])
-        plt.title('hyper-priors')
-
-        for i, prior in enumerate(priors):
-            plt.plot(grid, np.exp(prior[1].logp(grid).eval()), label = prior[0])
-
-        plt.legend()
-        plt.show()
-
     return(hps)
 
 
@@ -261,67 +237,6 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, indv_me
 
     return(df_new)
 
-def predict_ot(conf_type, df, train_id, test_id, mp, gp, σ, C):
-
-    """This function takes the mp, gps and σ for a two-trend implimentation.
-    it also needs the df, the train ids and the val/test ids.
-    It outpust a pandas daframe with X, y (train/test) along w/ mu and var.
-    We get mu and var over all X and for both full gp, long trend gp and short trand gp.
-    C denotes the number of minimum conlflict in timelines and is just for testing.
-    I a full run set C = 0."""
-
-    new_id = np.append(train_id, test_id)
-    df_sorted = df.sort_values(['pg_id', 'month_id'])
-    X_new = df_sorted[df_sorted['id'].isin(new_id) ]['month_id'].unique()[:,None] # all X
-
-    sample_pg_id = sample_conflict_timeline(conf_type = 'ged_best_sb', df = df, train_id = train_id, test_id = test_id, C = C)
-
-    train_len = df_sorted[df_sorted['id'].isin(train_id)]['month_id'].unique().shape[0]#test
-    test_len = df_sorted[df_sorted['id'].isin(test_id)]['month_id'].unique().shape[0]#test
-    X = theano.shared(np.zeros(train_len)[:,None], 'X')#test
-    y = theano.shared(np.zeros(train_len), 'y')#test
-
-    # make lists
-    mu_list = []
-    var_list = []
-    X_new_list = []
-    #y_new_list = []
-    idx_list = []
-    pg_idx_list = []
-    train_list = []
-
-    # Loop gp predict over time lines
-    for i, j in enumerate(sample_pg_id):
-
-        print(f'Time-line {i+1}/{sample_pg_id.shape[0]} in the works (prediction)...', end = '\r')
-
-        idx = df_sorted[(df_sorted['id'].isin(new_id)) & (df_sorted['pg_id'] == j)]['id'].values
-
-        X.set_value(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None])
-        y.set_value(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type].values)
-
-        mu, var = gp.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X, 'y' : y, 'noise' : σ}, diag=True)
-
-        mu_list.append(mu)
-        var_list.append(var)
-        X_new_list.append(X_new)
-        idx_list.append(idx)
-        pg_idx_list.append([j] * mu.shape[0])
-        train_list.append(np.array([1] * train_len + [0] * test_len)) # dummy for training...
-
-    mu_col = np.array(mu_list).reshape(-1,) 
-    var_col = np.array(var_list).reshape(-1,) 
-    X_new_col = np.array(X_new_list).reshape(-1,) 
-    idx_col = np.array(idx_list).reshape(-1,)    
-    pg_idx_col = np.array(pg_idx_list).reshape(-1,)
-    train_col =  np.array(train_list).reshape(-1,)
-
-    df_new = pd.DataFrame({
-                           'mu': mu_col, 'var' : var_col, 'X' : X_new_col, 
-                            'id' : idx_col, 'pg_id' : pg_idx_col, 'train' : train_col
-                            })
-
-    return(df_new)
 
 # This here just vectorize it!
 def get_mse(df_merged, train_id, test_id):
@@ -354,34 +269,6 @@ def get_mse(df_merged, train_id, test_id):
             "Gps": ["Full", "Short", "long"],
             "MSE insample (mean)": [mse_train, mse_s_train, mse_l_train],
             "MSE outsample (mean)": [mse_test, mse_s_test, mse_l_test],
-            })
-
-    return(mse_resutls_df)
-
-
-# This here just vectorize it!
-def get_mse_ot(df_merged, train_id, test_id):
-
-    """This funciton takes a merged df, the train ids and val/test ids. 
-    The df should be a merger between the original df and the new-df from 'predict'.
-    The funciton outputs a df containing the in/out mse for the gp, gp_s and gp_l."""
-
-    # iterate over time lines - we would like a distribution of mse
-
-    y_true_train = df_merged[df_merged['id'].isin(train_id)]['ged_best_sb']
-    pred_train = df_merged[df_merged['id'].isin(train_id)]['dce_mu']
-
-    mse_train = mean_squared_error(y_true_train, pred_train)
-
-    y_true_test = df_merged[df_merged['id'].isin(test_id)]['ged_best_sb']
-    pred_test = df_merged[df_merged['id'].isin(test_id)]['dce_mu']
-
-    mse_test = mean_squared_error(y_true_test, pred_test)
-
-    mse_resutls_df = pd.DataFrame({
-            "Gps": ["Full"],
-            "MSE insample (mean)": [mse_train],
-            "MSE outsample (mean)": [mse_test],
             })
 
     return(mse_resutls_df)
@@ -431,61 +318,6 @@ def get_metrics(df_merged, train_id, test_id):
                    'cm_mu_s', 'cm_mu_s_slope', 'cm_mu_s_acc', 'cm_mu_s_mass',
                    'cm_mu_l', 'cm_mu_l_slope', 'cm_mu_l_acc', 'cm_mu_l_mass',
                    'cm_var', 'cm_var_s', 'cm_var_l']
-
-    X_train = df_merged2[df_merged2['id'].isin(train_id)][feature_set] 
-    
-    y_train = (df_merged2[df_merged2['id'].isin(train_id)]['ged_best_sb'] > 0) * 1
-
-    X_test = df_merged2[df_merged2['id'].isin(test_id)][feature_set]
-
-    y_test = (df_merged2[df_merged2['id'].isin(test_id)]['ged_best_sb'] > 0) * 1
-
-
-    # totally vanilla - just indicative
-    model = RandomForestClassifier(n_estimators=64, max_depth=6, min_samples_split=8, random_state=42, n_jobs= -1)
-
-    model.fit(X_train, y_train)
-
-    y_train_pred = model.predict_proba(X_train)[:,1]
-    y_test_pred = model.predict_proba(X_test)[:,1]
-
-    AUC_train = metrics.roc_auc_score(y_train, y_train_pred)
-    AP_train = metrics.average_precision_score(y_train, y_train_pred)
-    BS_train = metrics.brier_score_loss(y_train, y_train_pred)
-
-    AUC_test = metrics.roc_auc_score(y_test, y_test_pred)
-    AP_test = metrics.average_precision_score(y_test, y_test_pred)
-    BS_test = metrics.brier_score_loss(y_test, y_test_pred)
-
-    df_results =  pd.DataFrame({
-            "Metrics": ["AUC", "AP", "BS"],
-            "Train": [AUC_train, AP_train, BS_train],
-            "Test": [AUC_test, AP_test, BS_test]
-        })
-
-    return(df_results)
-
-
-
-def get_metrics_ot(df_merged, train_id, test_id):
-
-    """Same as normal, just for only one-trend"""
-     # the cm_pred_df:
-    pkl_file = open('/home/projects/ku_00017/data/generated/currents/valtime_cm_pred_df.pkl', 'rb')
-    cm_pred_df = pickle.load(pkl_file)
-    pkl_file.close()
-
-    cm_pred_df.rename(columns =  {'mu' : 'cm_mu', 'var': 'cm_var'}, inplace=True)   
-
-    cm_pred_df.sort_values(['pg_id', 'X'], inplace= True)
-    cm_pred_df['cm_mu_slope'] = cm_pred_df.groupby('pg_id')['cm_mu'].transform(np.gradient)
-    cm_pred_df['cm_mu_acc'] = cm_pred_df.groupby('pg_id')['cm_mu_slope'].transform(np.gradient)
-    cm_pred_df['cm_mu_mass'] = cm_pred_df.groupby('pg_id')['cm_mu'].transform(np.cumsum)
-
-    # some merge.
-    df_merged2 = pd.merge(df_merged, cm_pred_df, how = 'left', on = ['id', 'pg_id'])
-
-    feature_set = ['cm_mu', 'cm_mu_slope', 'cm_mu_acc', 'cm_mu_mass', 'cm_var']
 
     X_train = df_merged2[df_merged2['id'].isin(train_id)][feature_set] 
     
