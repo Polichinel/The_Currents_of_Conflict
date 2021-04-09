@@ -80,7 +80,7 @@ print(f"{C_est}_{C_pred}_{conf_type}_{s_kernel}\n")
 path = open('/home/projects/ku_00017/data/generated/currents/dce_mp.pkl', 'rb')
 dce_mp = pickle.load(path)
 path.close()
-print(f"got mp: ℓ_l:{dce_mp['ℓ_l']}, η_l:{dce_mp['η_l']}, ℓ_s:{dce_mp['ℓ_s']}, η_s:{dce_mp['η_s']}, σ:{dce_mp['σ']}"
+print(f"got mp: ℓ_l:{dce_mp['ℓ_l']}, η_l:{dce_mp['η_l']}, ℓ_s:{dce_mp['ℓ_s']}, η_s:{dce_mp['η_s']}, σ:{dce_mp['σ']}")
 
 # Constuction the gps and getting the map
 hps = get_hyper_priors() # these might need some changing... 
