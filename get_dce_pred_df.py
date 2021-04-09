@@ -163,62 +163,6 @@ final_run_time = final_time - start_time
 string = f'Run for {final_run_time/60:.3} minutes'
 print(string)
 
-# ---------------------------------------------------------------------
-
-
-# getting mse results:
-# need to fix stuff here prob...
-print('Getting MSE')
-mse_resutls_df = get_mse(df_merged = df_merged, train_id = train_id, test_id = val_id)
-
-# Creating devrivatives:
-print('Creating devrivatives')
-df_merged.sort_values(['pg_id', 'X'], inplace= True)
-df_merged['dce_mu_slope'] = df_merged.groupby('pg_id')['dce_mu'].transform(np.gradient)
-df_merged['dce_mu_acc'] = df_merged.groupby('pg_id')['dce_mu_slope'].transform(np.gradient)
-df_merged['dce_mu_mass'] = df_merged.groupby('pg_id')['dce_mu'].transform(np.cumsum)
-
-df_merged['dce_mu_s_slope'] = df_merged.groupby('pg_id')['dce_mu_s'].transform(np.gradient)
-df_merged['dce_mu_s_acc'] = df_merged.groupby('pg_id')['dce_mu_s_slope'].transform(np.gradient)
-df_merged['dce_mu_s_mass'] = df_merged.groupby('pg_id')['dce_mu_s'].transform(np.cumsum)
-
-df_merged['dce_mu_l_slope'] = df_merged.groupby('pg_id')['dce_mu_l'].transform(np.gradient)
-df_merged['dce_mu_l_acc'] = df_merged.groupby('pg_id')['dce_mu_l_slope'].transform(np.gradient)
-df_merged['dce_mu_l_mass'] = df_merged.groupby('pg_id')['dce_mu_l'].transform(np.cumsum)
-
-
-# Get classification results
-# also need new one here.
-# variables have new names and you must have cm on here: what complimentary signals not the same.
-print('Getting classifcation results')
-df_results = get_metrics(df_merged = df_merged, train_id = train_id, test_id = val_id)
-
-# "filing" names
-print('Saving..')
-pre_script_map_df = f'{C_est}_{C_pred}_{conf_type}_{s_kernel}_map_df'
-pre_script_mse_resutls_df = f'{C_est}_{C_pred}_{conf_type}_{s_kernel}_mse_results_df'
-pre_script_df_results = f'{C_est}_{C_pred}_{conf_type}_{s_kernel}_df_results'
-pre_script_df = f'{C_est}_{C_pred}_{conf_type}_{s_kernel}_df_merged'
-
-# Save in the eksperiments_dict
-out_dict[pre_script_map_df] = map_df
-out_dict[pre_script_mse_resutls_df] = mse_resutls_df
-out_dict[pre_script_df_results] = df_results
-out_dict[pre_script_df] = df_merged
-            
-new_file_name = '/home/projects/ku_00017/data/generated/currents/tt_8_mat32_exp_dce_dict.pkl'
-output = open(new_file_name, 'wb')
-pickle.dump(out_dict, output)
-output.close()
-
-# end timer
-final_time = time.time()
-final_run_time = final_time - start_time
-string = f'Run for {final_run_time/60:.3} minutes'
-print(string)
-
-
-
 
 
 
