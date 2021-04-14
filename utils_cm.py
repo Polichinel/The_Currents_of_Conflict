@@ -157,7 +157,7 @@ def get_hyper_priors(η_beta_s = 0.5, ℓ_beta_s = 0.8, ℓ_alpha_s = 2, α_alph
 
 
 
-def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, indv_mean = False):
+def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C):
 
     """This function takes the mp, gps and σ for a two-trend implimentation.
     it also needs the df, the train ids and the val/test ids.
@@ -174,8 +174,10 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, indv_me
 
     train_len = df_sorted[df_sorted['id'].isin(train_id)]['month_id'].unique().shape[0]#test
     test_len = df_sorted[df_sorted['id'].isin(test_id)]['month_id'].unique().shape[0]#test
-    X = theano.shared(np.zeros(train_len)[:,None], 'X')#test
-    y = theano.shared(np.zeros(train_len), 'y')#test
+    
+    # try without shared....
+    #X = theano.shared(np.zeros(train_len)[:,None], 'X')#test
+    #y = theano.shared(np.zeros(train_len), 'y')#test
 
     # make lists
     mu_list = []
@@ -198,13 +200,11 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, indv_me
         idx = df_sorted[(df_sorted['id'].isin(new_id)) & (df_sorted['pg_id'] == j)]['id'].values
         y_new = np.log(df_sorted[(df_sorted['id'].isin(new_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values
 
-        #X = df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None]
-        #y = np.log(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values
-        X.set_value(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None])
-        y.set_value(np.log(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values)
+        X = df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None]
+        y = np.log(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values
+        #X.set_value(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None])
+        #y.set_value(np.log(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values)
 
-        #if indv_mean == True:
-            #gp.mean_func = pm.gp.mean.Constant(y.mean()) # individual mean_func
 
         mu, var = gp.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X, 'y' : y, 'noise' : σ}, diag=True)
         mu_s, var_s = gp_s.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X, 'y' : y, 'noise' : σ}, diag=True)
