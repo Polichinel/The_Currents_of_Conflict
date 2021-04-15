@@ -176,8 +176,8 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C):
     test_len = df_sorted[df_sorted['id'].isin(test_id)]['month_id'].unique().shape[0]#test
     
     # try without shared....
-    #X = theano.shared(np.zeros(train_len)[:,None], 'X')#test
-    #y = theano.shared(np.zeros(train_len), 'y')#test
+    X = theano.shared(np.zeros(train_len)[:,None], 'X')#test
+    y = theano.shared(np.zeros(train_len), 'y')#test
 
     # make lists
     mu_list = []
@@ -200,10 +200,10 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C):
         idx = df_sorted[(df_sorted['id'].isin(new_id)) & (df_sorted['pg_id'] == j)]['id'].values
         y_new = np.log(df_sorted[(df_sorted['id'].isin(new_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values
 
-        X = df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None]
-        y = np.log(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values
-        #X.set_value(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None])
-        #y.set_value(np.log(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values)
+        #X = df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None]
+        #y = np.log(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values
+        X.set_value(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None])
+        y.set_value(np.log(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values)
 
 
         mu, var = gp.predict(X_new, point=mp, given = {'gp' : gp, 'X' : X, 'y' : y, 'noise' : σ}, diag=True)
