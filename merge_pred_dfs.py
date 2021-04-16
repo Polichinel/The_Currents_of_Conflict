@@ -3,6 +3,8 @@ import pandas as pd
 
 import pickle
 
+# why not also get the coords from ViEWS here?
+
 # get dce_pred_df:
 #pkl_file = open('/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/dce_pred_df.pkl', 'rb')
 pkl_file = open('/home/projects/ku_00017/data/generated/currents/dce_pred_df.pkl', 'rb')

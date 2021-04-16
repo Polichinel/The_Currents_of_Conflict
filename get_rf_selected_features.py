@@ -57,8 +57,8 @@ for j in range(n_feat): # set 4 for test
 selected_features = pd.DataFrame({'features' : chosen_features, 'AP' : chosen_features_ap})
 
 print('Pickling..')
-new_file_name = '/home/projects/ku_00017/data/generated/currents/selected_features.pkl'
-#new_file_name = '/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/selected_features.pkl'
+new_file_name = '/home/projects/ku_00017/data/generated/currents/rf_selected_features.pkl'
+#new_file_name = '/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/rf_selected_features.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(selected_features, output)
 output.close()
