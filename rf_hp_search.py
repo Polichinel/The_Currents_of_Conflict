@@ -21,8 +21,8 @@ from sklearn import metrics
 
 
 # get df:
-pkl_file = open('/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/selected_features.pkl', 'rb')
-#pkl_file = open('/home/projects/ku_00017/data/generated/currents/selected_features.pkl', 'rb')
+#pkl_file = open('/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/selected_features.pkl', 'rb')
+pkl_file = open('/home/projects/ku_00017/data/generated/currents/selected_features.pkl', 'rb')
 selected_features = pickle.load(pkl_file)
 pkl_file.close()
 
