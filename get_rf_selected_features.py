@@ -8,7 +8,7 @@ import time
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
 
-from utils_rf import get_Xy_tt
+from utils_ens import get_Xy_tt
 
 X_train, y_train, X_test, y_test = get_Xy_tt(local = False)
 
@@ -33,7 +33,7 @@ for j in range(n_feat): # set 4 for test
 
         print(f'{i+1}/{n_i}, Running with: {X_temp}')
 
-        model_tmp = RandomForestClassifier(n_estimators=142, criterion = 'gini', max_depth = 4, min_samples_split = 3, random_state=42, n_jobs= 4) # HP from quick naive search
+        model_tmp = RandomForestClassifier(n_estimators=128, criterion = 'gini', max_depth = 6, min_samples_split = 4, random_state=42, n_jobs= 18) # HP from quick naive search
 
         model_tmp.fit(X_train[X_temp], y_train)
 
