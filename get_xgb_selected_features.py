@@ -34,7 +34,7 @@ for j in range(n_feat): # set 4 for test
 
         print(f'{i+1}/{n_i}, Running with: {X_temp}')
 
-        model_tmp = XGBClassifier(n_estimators=128, max_depth = 5, gamma = 0.7, reg_lambda = 0.25, random_state=42, n_jobs= 4, objective='binary:logistic') #, use_label_encoder=False)# HP from quick naive search
+        model_tmp = XGBClassifier(n_estimators=128, max_depth = 5, gamma = 0.7, reg_lambda = 0.25, random_state=42, n_jobs= 18, objective='binary:logistic') #, use_label_encoder=False)# HP from quick naive search
         #  max_depth = 2. du bliver nød til også at køre med andre max depth for at se om det ændre noget..
 
         model_tmp.fit(X_train[X_temp], y_train)
