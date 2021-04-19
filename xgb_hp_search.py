@@ -68,7 +68,7 @@ for i in range(n_rounds):
     reg_lambda = np.random.uniform(0.01, 0.9)
     
     
-    model = XGBClassifier(n_estimators=n_estimators, max_depth = max_depth, gamma = gamma, reg_lambda = reg_lambda, random_state=i, n_jobs= 4, objective='binary:logistic', use_label_encoder=False)
+    model = XGBClassifier(n_estimators=n_estimators, max_depth = max_depth, gamma = gamma, reg_lambda = reg_lambda, random_state=i, n_jobs= 16, objective='binary:logistic', use_label_encoder=False)
 
     
     model.fit(X_train[best_features], y_train)

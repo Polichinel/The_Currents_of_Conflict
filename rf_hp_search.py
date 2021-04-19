@@ -79,7 +79,7 @@ for i in range(n_rounds):
     
     model = RandomForestClassifier( n_estimators=n_estimators, criterion = criterion, max_depth = max_depth, 
                                     min_samples_split= min_samples_split, class_weight = class_weight, 
-                                    random_state=i, n_jobs= 4)
+                                    random_state=i, n_jobs= 16)
     
     model.fit(X_train[best_features], y_train)
 
