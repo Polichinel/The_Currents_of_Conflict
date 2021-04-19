@@ -14,7 +14,7 @@ import matplotlib.lines as mlines
 from matplotlib import cm
 import seaborn as sns
 
-from utils_rf import get_Xy_tt
+from utils_ens import get_Xy_tt
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
@@ -26,7 +26,7 @@ pkl_file = open('/home/projects/ku_00017/data/generated/currents/selected_featur
 selected_features = pickle.load(pkl_file)
 pkl_file.close()
 
-X_train, y_train, X_test, y_test = get_Xy_tt(local = True)
+X_train, y_train, X_test, y_test = get_Xy_tt(local = False)
 n_rounds = 500
 
 #best_features = selected_features['features'][:4].values # four first chosen features from forward featurte selection.
