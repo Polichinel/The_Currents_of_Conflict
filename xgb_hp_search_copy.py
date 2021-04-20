@@ -3,13 +3,20 @@ import numpy as np
 import pandas as pd
 
 import pickle
+import time
+
+
+import matplotlib.pyplot as plt
+import matplotlib.lines as mlines
+from matplotlib import cm
+import seaborn as sns
 
 from utils_ens import get_Xy_tt
 
+import xgboost as xgb
 from xgboost import XGBClassifier
 from sklearn import metrics
 
-print('Starting script...')
 
 # get df:
 #pkl_file = open('/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/xgb_selected_features.pkl', 'rb')
@@ -18,7 +25,7 @@ selected_features = pickle.load(pkl_file)
 pkl_file.close()
 
 X_train, y_train, X_test, y_test = get_Xy_tt(local = False)
-n_rounds = 500
+n_rounds = 10
 
 best_features = selected_features['features'][:8].values # four first chosen features from forward featurte selection.
 
@@ -55,7 +62,7 @@ BS_test_list = []
 pr_test_list = []
 roc_test_list = []
 
-print('Beginning loop..')
+print('Beginning loop')
 for i in range(n_rounds):
 
     # Variable hyper parameters
@@ -67,11 +74,11 @@ for i in range(n_rounds):
     max_delta_step = np.random.randint(2, 11)
     colsample_bytree = np.random.uniform(0.3, 1.0)
     #subsample = np.random.uniform(0.2, 0.9) # might not work due to high imbalance. you do it manually if need be.
-    reg_alpha = np.random.uniform(0, 1) # maybe this ha to ba above 0.1
+    reg_alpha = np.random.uniform(0, 1)
     reg_lambda = np.random.uniform(0.01, 0.9)
     min_child_weight = np.random.randint(1, 9)
-    scale_pos_weight = np.random.uniform(0,1) # maybe this ha to ba above 0.1
-    base_score = np.random.uniform(0,1)# maybe this ha to ba above 0.1
+    scale_pos_weight = np.random.uniform(0,1)
+    base_score = np.random.uniform(0,1)
     n_estimators = np.random.randint(100, 150)
     
     # model
@@ -131,7 +138,6 @@ for i in range(n_rounds):
 
 # creating df:
 print('Creating DF..')
-
 hp_df = pd.DataFrame({'learning_rate' : learning_rate_list, 'booster' : booster_list, 'importance_type' : importance_type_list,                                                
                       'gamma' : gamma_list, 'max_depth' : max_depth_list, 'max_delta_step' : max_delta_step_list, 
                       'colsample_bytree' : colsample_bytree_list, 'reg_alpha' : reg_alpha_list, 'reg_lambda' : reg_lambda_list, 
@@ -145,4 +151,3 @@ new_file_name = '/home/projects/ku_00017/data/generated/currents/xgb_hp_df.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(hp_df, output)
 output.close()
-
