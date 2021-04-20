@@ -28,7 +28,7 @@ pkl_file.close()
 X_train, y_train, X_test, y_test = get_Xy_tt(local = False)
 n_rounds = 500
 
-best_features = selected_features['features'][:4].values # four first chosen features from forward featurte selection.
+best_features = selected_features['features'][:9].values # four first chosen features from forward featurte selection.
 #best_features = selected_features['features'].values # four first chosen features from forward featurte selection.
 
 max_depth_list = [] # a bit redundent now, but hey.
@@ -64,17 +64,17 @@ print('Beginning loop')
 for i in range(n_rounds):
 
     # Variable hyper parameters
-    n_estimators = np.random.randint(100,150) # performanece seem to drop after 150 which is a bit stange but fine.
+    n_estimators = np.random.randint(125,150)
     min_samples_split = np.random.randint(2,7) # seems fine down here
-    max_depth = np.random.randint(2,7)
-    W_feature0 = (np.random.randint(1,10,1)*0.1)[0] #(np.random.randint(1,10,1)*0.1)[0] # value between 0.1 and 1 # wierd that his should be largest according to your tests
-    W_feature1 = (np.random.randint(1,10,1)*0.1)[0] #(np.random.randint(1,10,1)*0.1)[0] # and wierd that this should be smallest..
+    max_depth = np.random.randint(4,11)
+    W_feature0 = (np.random.randint(5,10,1)*0.1)[0] #(np.random.randint(1,10,1)*0.1)[0] # value between 0.1 and 1 # wierd that his should be largest according to your tests
+    W_feature1 = (np.random.randint(1,5,1)*0.1)[0] #(np.random.randint(1,10,1)*0.1)[0] # and wierd that this should be smallest..
     #W_feature0 = (np.random.randint(2,11,1)*0.1)[0] # uniform from 0.2-1. prob could be justone number but where's the fun in that..
     #W_feature1 = W_feature0 * 0.52 + np.random.randn() * 0.01 # function with a bit of random noise
     class_weight = {0:W_feature0, 1:W_feature1} 
-    
+
     criterion = ['gini', 'entropy'][np.random.randint(0,2)] # bianry: one or the other. Gini just did wastly better
-    max_features = ['auto', 'sqrt', 'log2'][np.random.randint(0,3)]
+    max_features = ['auto', 'sqrt', 'log2'][np.random.randint(0,3)]]
     
     model = RandomForestClassifier( n_estimators=n_estimators, criterion = criterion, max_depth = max_depth, 
                                     min_samples_split= min_samples_split, class_weight = class_weight, 
@@ -148,8 +148,8 @@ hp_df = pd.DataFrame({'n_estimators' : n_estimators_list, 'max_depth' : max_dept
 
 
 print('Pickling..')
-new_file_name = '/home/projects/ku_00017/data/generated/currents/rf_hp_US_BC_4f_df.pkl'
-#new_file_name = '/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/rf_hp_US_BC_4f_df.pkl'
+new_file_name = '/home/projects/ku_00017/data/generated/currents/rf_hp_US_BC_9f_df.pkl'
+#new_file_name = '/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/rf_hp_US_BC_9f_df.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(hp_df, output)
 output.close()
