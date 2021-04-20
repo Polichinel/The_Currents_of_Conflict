@@ -125,7 +125,7 @@ for i in range(n_rounds):
 hp_df = pd.DataFrame({'n_estimators' : n_estimators_list, 'max_depth' : max_depth_list, 'min_samples_split' : min_samples_split_list,
                       'w0' : W_feature0_list, 'w1' : W_feature1_list, 
                       'criterion' : criterion_list, 'class_weight' : class_weight_list, 'max_features' : max_features_list,  
-                      'test_preds' : test_preds, 'AP' : AP_test_list, 'PR' : pr_test_list})
+                      'test_preds' : test_preds, 'AP' : AP_test_list, 'PR' : pr_test_list, 'ROC' : roc_test_list})
 
 
 print('Pickling..')
