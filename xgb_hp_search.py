@@ -1,11 +1,15 @@
+print('importing os, numpy, pandas and pickle')
+
 import os
 import numpy as np
 import pandas as pd
 
 import pickle
 
+print('importing get_Xy_tt')
 from utils_ens import get_Xy_tt
 
+print('importing xgboost and metrics')
 from xgboost import XGBClassifier
 from sklearn import metrics
 
