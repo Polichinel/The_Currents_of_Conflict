@@ -25,7 +25,7 @@ selected_features = pickle.load(pkl_file)
 pkl_file.close()
 
 X_train, y_train, X_test, y_test = get_Xy_tt(local = False)
-n_rounds = 10
+n_rounds = 500
 
 best_features = selected_features['features'][:8].values # four first chosen features from forward featurte selection.
 
