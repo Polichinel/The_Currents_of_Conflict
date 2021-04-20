@@ -35,7 +35,7 @@ max_depth_list = [] # a bit redundent now, but hey.
 n_estimators_list = []
 min_samples_split_list = []
 criterion_list = []
-class_weight_list = []
+#class_weight_list = []
 max_features_list = []
 
 # see https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html for more.
@@ -57,27 +57,27 @@ BS_test_list = []
 pr_test_list = []
 roc_test_list = []
 
-W_feature0_list = []
-W_feature1_list = []
+#W_feature0_list = []
+#W_feature1_list = []
 
 print('Beginning loop')
 for i in range(n_rounds):
 
     # Variable hyper parameters
     n_estimators = np.random.randint(100,150) # performanece seem to drop after 150 which is a bit stange but fine.
-    min_samples_split = np.random.randint(2,7) # seems fine down here
+    min_samples_split = np.random.randint(4,7) # seems fine down here
     max_depth = np.random.randint(2,7)
-    W_feature0 = (np.random.randint(1,10,1)*0.1)[0] #(np.random.randint(1,10,1)*0.1)[0] # value between 0.1 and 1 # wierd that his should be largest according to your tests
-    W_feature1 = (np.random.randint(1,10,1)*0.1)[0] #(np.random.randint(1,10,1)*0.1)[0] # and wierd that this should be smallest..
+    #W_feature0 = (np.random.randint(1,10,1)*0.1)[0] #(np.random.randint(1,10,1)*0.1)[0] # value between 0.1 and 1 # wierd that his should be largest according to your tests
+    #W_feature1 = (np.random.randint(1,10,1)*0.1)[0] #(np.random.randint(1,10,1)*0.1)[0] # and wierd that this should be smallest..
     #W_feature0 = (np.random.randint(2,11,1)*0.1)[0] # uniform from 0.2-1. prob could be justone number but where's the fun in that..
     #W_feature1 = W_feature0 * 0.52 + np.random.randn() * 0.01 # function with a bit of random noise
-    class_weight = {0:W_feature0, 1:W_feature1} 
+    #class_weight = {0:W_feature0, 1:W_feature1} 
     
     criterion = ['gini', 'entropy'][np.random.randint(0,2)] # bianry: one or the other. Gini just did wastly better
     max_features = ['auto', 'sqrt', 'log2'][np.random.randint(0,3)]
     
     model = RandomForestClassifier( n_estimators=n_estimators, criterion = criterion, max_depth = max_depth, 
-                                    min_samples_split= min_samples_split, class_weight = class_weight, 
+                                    min_samples_split= min_samples_split,
                                     random_state=i, n_jobs= 18)
     
     model.fit(X_train[best_features], y_train)
@@ -109,11 +109,11 @@ for i in range(n_rounds):
     max_depth_list.append(max_depth)
     min_samples_split_list.append(min_samples_split)
     criterion_list.append(criterion)
-    class_weight_list.append(class_weight)
+    #class_weight_list.append(class_weight)
     max_features_list.append(max_features)
 
-    W_feature0_list.append(W_feature0) # just for plottting
-    W_feature1_list.append(W_feature1)
+    #W_feature0_list.append(W_feature0) # just for plottting
+    #W_feature1_list.append(W_feature1)
     
     train_preds.append(y_train_pred)
     test_preds.append(y_test_pred)
@@ -123,8 +123,7 @@ for i in range(n_rounds):
 
 
 hp_df = pd.DataFrame({'n_estimators' : n_estimators_list, 'max_depth' : max_depth_list, 'min_samples_split' : min_samples_split_list,
-                      'w0' : W_feature0_list, 'w1' : W_feature1_list, 
-                      'criterion' : criterion_list, 'class_weight' : class_weight_list, 'max_features' : max_features_list,  
+                      'criterion' : criterion_list, 'max_features' : max_features_list,  
                       'test_preds' : test_preds, 'AP' : AP_test_list, 'PR' : pr_test_list, 'ROC' : roc_test_list})
 
 
