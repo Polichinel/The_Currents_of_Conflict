@@ -3,17 +3,9 @@ import numpy as np
 import pandas as pd
 
 import pickle
-import time
-
-
-import matplotlib.pyplot as plt
-import matplotlib.lines as mlines
-from matplotlib import cm
-import seaborn as sns
 
 from utils_ens import get_Xy_tt
 
-import xgboost as xgb
 from xgboost import XGBClassifier
 from sklearn import metrics
 
@@ -139,6 +131,7 @@ for i in range(n_rounds):
 
 # creating df:
 print('Creating DF..')
+
 hp_df = pd.DataFrame({'learning_rate' : learning_rate_list, 'booster' : booster_list, 'importance_type' : importance_type_list,                                                
                       'gamma' : gamma_list, 'max_depth' : max_depth_list, 'max_delta_step' : max_delta_step_list, 
                       'colsample_bytree' : colsample_bytree_list, 'reg_alpha' : reg_alpha_list, 'reg_lambda' : reg_lambda_list, 
