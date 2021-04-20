@@ -74,7 +74,7 @@ for i in range(n_rounds):
     class_weight = {0:W_feature0, 1:W_feature1} 
 
     criterion = ['gini', 'entropy'][np.random.randint(0,2)] # bianry: one or the other. Gini just did wastly better
-    max_features = ['auto', 'sqrt', 'log2'][np.random.randint(0,3)]]
+    max_features = ['auto', 'sqrt', 'log2'][np.random.randint(0,3)]
     
     model = RandomForestClassifier( n_estimators=n_estimators, criterion = criterion, max_depth = max_depth, 
                                     min_samples_split= min_samples_split, class_weight = class_weight, 
