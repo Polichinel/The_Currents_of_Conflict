@@ -17,6 +17,7 @@ import xgboost as xgb
 from xgboost import XGBClassifier
 from sklearn import metrics
 
+print('Starting script...')
 
 # get df:
 #pkl_file = open('/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/xgb_selected_features.pkl', 'rb')
@@ -62,7 +63,7 @@ BS_test_list = []
 pr_test_list = []
 roc_test_list = []
 
-print('Beginning loop')
+print('Beginning loop..')
 for i in range(n_rounds):
 
     # Variable hyper parameters
@@ -74,11 +75,11 @@ for i in range(n_rounds):
     max_delta_step = np.random.randint(2, 11)
     colsample_bytree = np.random.uniform(0.3, 1.0)
     #subsample = np.random.uniform(0.2, 0.9) # might not work due to high imbalance. you do it manually if need be.
-    reg_alpha = np.random.uniform(0, 1)
+    reg_alpha = np.random.uniform(0, 1) # maybe this ha to ba above 0.1
     reg_lambda = np.random.uniform(0.01, 0.9)
     min_child_weight = np.random.randint(1, 9)
-    scale_pos_weight = np.random.uniform(0,1)
-    base_score = np.random.uniform(0,1)
+    scale_pos_weight = np.random.uniform(0,1) # maybe this ha to ba above 0.1
+    base_score = np.random.uniform(0,1)# maybe this ha to ba above 0.1
     n_estimators = np.random.randint(100, 150)
     
     # model
