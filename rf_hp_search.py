@@ -118,7 +118,7 @@ for i in range(n_rounds):
     train_preds.append(y_train_pred)
     test_preds.append(y_test_pred)
 
-    print(f'{i+1}/{n_rounds} done. AP test: {AUC_test_list[i]}, AP train: {AUC_train_list[i]}', end='\r')
+    print(f'{i+1}/{n_rounds} done. AP test: {AP_test_list[i]}, AP train: {AP_train_list[i]}', end='\r')
 
 
 
