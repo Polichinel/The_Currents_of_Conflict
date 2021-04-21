@@ -37,6 +37,7 @@ min_samples_split_list = []
 criterion_list = []
 #class_weight_list = []
 max_features_list = []
+min_samples_leaf_list = []
 
 # see https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html for more.
 
@@ -67,6 +68,7 @@ for i in range(n_rounds):
     n_estimators = np.random.randint(100,150) # performanece seem to drop after 150 which is a bit stange but fine.
     min_samples_split = np.random.randint(4,7) # seems fine down here
     max_depth = np.random.randint(4,7)
+    min_samples_leaf = np.random.randint(1,200)
     #W_feature0 = (np.random.randint(1,10,1)*0.1)[0] #(np.random.randint(1,10,1)*0.1)[0] # value between 0.1 and 1 # wierd that his should be largest according to your tests
     #W_feature1 = (np.random.randint(1,10,1)*0.1)[0] #(np.random.randint(1,10,1)*0.1)[0] # and wierd that this should be smallest..
     #W_feature0 = (np.random.randint(2,11,1)*0.1)[0] # uniform from 0.2-1. prob could be justone number but where's the fun in that..
@@ -77,11 +79,12 @@ for i in range(n_rounds):
     max_features = ['auto', 'sqrt', 'log2'][np.random.randint(0,3)]
     
     model = RandomForestClassifier( n_estimators=n_estimators, criterion = criterion, max_depth = max_depth, 
-                                    min_samples_split= min_samples_split,
+                                    min_samples_split= min_samples_split, min_samples_leaf= min_samples_leaf,
                                     random_state=i, n_jobs= 18)
     
     model.fit(X_train[best_features], y_train)
 
+    # metrics
     y_train_pred = model.predict_proba(X_train[best_features])[:,1]
     y_test_pred = model.predict_proba(X_test[best_features])[:,1]
 
@@ -104,26 +107,27 @@ for i in range(n_rounds):
 
     pr_test_list.append((precision_test, recall_test))
     roc_test_list.append((fpr_test, tpr_test))
-    
+   
+    train_preds.append(y_train_pred)
+    test_preds.append(y_test_pred)
+
+    # hps:
     n_estimators_list.append(n_estimators)
     max_depth_list.append(max_depth)
     min_samples_split_list.append(min_samples_split)
     criterion_list.append(criterion)
-    #class_weight_list.append(class_weight)
     max_features_list.append(max_features)
-
+    min_samples_leaf_list.append(min_samples_leaf)
+    #class_weight_list.append(class_weight)
     #W_feature0_list.append(W_feature0) # just for plottting
     #W_feature1_list.append(W_feature1)
     
-    train_preds.append(y_train_pred)
-    test_preds.append(y_test_pred)
-
     print(f'{i+1}/{n_rounds} done. AP test: {AP_test_list[i]}, AP train: {AP_train_list[i]}', end='\r')
 
 
 
 hp_df = pd.DataFrame({'n_estimators' : n_estimators_list, 'max_depth' : max_depth_list, 'min_samples_split' : min_samples_split_list,
-                      'criterion' : criterion_list, 'max_features' : max_features_list,  
+                      'min_samples_leaf' : min_samples_leaf_list ,'criterion' : criterion_list, 'max_features' : max_features_list,  
                       'test_preds' : test_preds, 'AP' : AP_test_list, 'PR' : pr_test_list, 'ROC' : roc_test_list})
 
 
