@@ -64,7 +64,7 @@ for i in range(n_rounds):
 
     # Variable hyper parameters
     learning_rate = np.random.uniform(0.001, 0.1)
-    booster = ["gbtree", "gblinear", "dart"][np.random.randint(0,3)]
+    booster = ["gbtree", "dart"][np.random.randint(0,2)] # bglinear don't work at all
     importance_type = ["gain", "weight", "cover", "total_gain", "total_cover"][np.random.randint(0,5)]
     gamma = np.random.uniform(0.01, 2)
     max_depth = np.random.randint(2, 11)
@@ -72,10 +72,10 @@ for i in range(n_rounds):
     colsample_bytree = np.random.uniform(0.3, 1.0)
     #subsample = np.random.uniform(0.2, 0.9) # might not work due to high imbalance. you do it manually if need be.
     reg_alpha = np.random.uniform(0, 1) # maybe this ha to ba above 0.1
-    reg_lambda = np.random.uniform(0.01, 0.9)
+    reg_lambda = np.random.uniform(0.01, 1)
     min_child_weight = np.random.randint(1, 9)
-    scale_pos_weight = np.random.uniform(0,1) # maybe this ha to ba above 0.1
-    base_score = np.random.uniform(0,1)# maybe this ha to ba above 0.1
+    scale_pos_weight = np.random.uniform(0.01,1) # maybe this ha to ba above 0.1
+    base_score = np.random.uniform(0.01,1)# maybe this ha to ba above 0.1
     n_estimators = np.random.randint(100, 150)
     
     # model
