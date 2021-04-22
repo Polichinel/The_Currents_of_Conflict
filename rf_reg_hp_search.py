@@ -102,7 +102,7 @@ for i in range(n_rounds):
 
     # train:
     MSE_train_list.append(metrics.mean_squared_error(y_train, y_train_pred_con))
-    MAE_train.append(metrics.mean_absolute_error(y_train, y_train_pred_con))
+    MAE_train_list.append(metrics.mean_absolute_error(y_train, y_train_pred_con))
     
     AUC_train_list.append(metrics.roc_auc_score(y_train_bi, y_train_pred_prob))
     AP_train_list.append(metrics.average_precision_score(y_train_bi, y_train_pred_prob))
@@ -115,8 +115,8 @@ for i in range(n_rounds):
     roc_train_list.append((fpr_train, tpr_train))
 
     # test:
-    MSE_test.append(metrics.mean_squared_error(y_test, y_test_pred_con))
-    MAE_test.append(metrics.mean_absolute_error(y_test, y_test_pred_con))
+    MSE_test_list.append(metrics.mean_squared_error(y_test, y_test_pred_con))
+    MAE_test_list.append(metrics.mean_absolute_error(y_test, y_test_pred_con))
     
     AUC_test_list.append(metrics.roc_auc_score(y_test_bi, y_test_pred_prob))
     AP_test_list.append(metrics.average_precision_score(y_test_bi, y_test_pred_prob))
