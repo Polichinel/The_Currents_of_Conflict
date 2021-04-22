@@ -78,7 +78,9 @@ for i in range(n_rounds):
     min_samples_leaf = np.random.randint(1,200)
     
     criterion = ['mse', 'mae'][np.random.randint(0,2)]
-    max_features = ['auto', 'sqrt', 'log2'][np.random.randint(0,3)]
+    #max_features = ['auto', 'sqrt', 'log2'][np.random.randint(0,3)]
+    max_features = ['auto', 'log2'][np.random.randint(0,2)]
+
 
 
     print(f'defining model {i+1}/{n_rounds}...', end = '\r')
