@@ -38,8 +38,8 @@ def get_Xy_tt(local = False, binary_y = True):
 
     elif binary_y == False:
 
-        y_train = df_merged[df_merged['train'] == 1]['ged_best_sb']
-        y_test = df_merged[df_merged['train'] == 0]['ged_best_sb'] # val, not test
+        y_train = np.log(df_merged[df_merged['train'] == 1]['ged_best_sb']) # try with log you tool
+        y_test = np.log(df_merged[df_merged['train'] == 0]['ged_best_sb']) # try with log you tool.. and its val, not test
 
        
 
