@@ -28,8 +28,7 @@ pkl_file.close()
 X_train, y_train, X_test, y_test = get_Xy_tt(local = False)
 n_rounds = 500
 
-best_features = selected_features['features'][:9].values # four first chosen features from forward featurte selection.
-#best_features = selected_features['features'].values # four first chosen features from forward featurte selection.
+best_features = selected_features['features'][:4].values # four first chosen features from forward featurte selection.
 
 max_depth_list = [] # a bit redundent now, but hey.
 n_estimators_list = []
@@ -68,7 +67,7 @@ for i in range(n_rounds):
     n_estimators = np.random.randint(100,150) # performanece seem to drop after 150 which is a bit stange but fine.
     min_samples_split = np.random.randint(4,7) # seems fine down here
     max_depth = np.random.randint(4,7)
-    min_samples_leaf = np.random.randint(1,256)
+    min_samples_leaf = np.random.randint(1,200)
     #W_feature0 = (np.random.randint(1,10,1)*0.1)[0] #(np.random.randint(1,10,1)*0.1)[0] # value between 0.1 and 1 # wierd that his should be largest according to your tests
     #W_feature1 = (np.random.randint(1,10,1)*0.1)[0] #(np.random.randint(1,10,1)*0.1)[0] # and wierd that this should be smallest..
     #W_feature0 = (np.random.randint(2,11,1)*0.1)[0] # uniform from 0.2-1. prob could be justone number but where's the fun in that..
@@ -132,8 +131,8 @@ hp_df = pd.DataFrame({'n_estimators' : n_estimators_list, 'max_depth' : max_dept
 
 
 print('Pickling..')
-new_file_name = '/home/projects/ku_00017/data/generated/currents/rf_hp_df.pkl'
-#new_file_name = '/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/rf_hp_df.pkl'
+new_file_name = '/home/projects/ku_00017/data/generated/currents/rf_hp_4f_df.pkl'
+#new_file_name = '/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/rf_hp_4f_df.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(hp_df, output)
 output.close()

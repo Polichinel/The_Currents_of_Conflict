@@ -28,7 +28,7 @@ pkl_file.close()
 X_train, y_train, X_test, y_test = get_Xy_tt(local = False)
 n_rounds = 500
 
-best_features = selected_features['features'][:9].values # four first chosen features from forward featurte selection.
+best_features = selected_features['features'][:4].values # four first chosen features from forward featurte selection.
 #best_features = selected_features['features'].values # four first chosen features from forward featurte selection.
 
 max_depth_list = [] # a bit redundent now, but hey.
@@ -142,7 +142,7 @@ hp_df = pd.DataFrame({'n_estimators' : n_estimators_list, 'max_depth' : max_dept
 
 
 print('Pickling..')
-new_file_name = '/home/projects/ku_00017/data/generated/currents/rf_hp_US_9f_df.pkl'
+new_file_name = '/home/projects/ku_00017/data/generated/currents/rf_hp_US_4f_df.pkl'
 #new_file_name = '/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/rf_hp_US_9f_df.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(hp_df, output)
