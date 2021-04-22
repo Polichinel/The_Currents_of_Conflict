@@ -1,6 +1,3 @@
-# To add a new cell, type '# %%'
-# To add a new markdown cell, type '# %% [markdown]'
-# %%
 import os
 import numpy as np
 import pandas as pd
@@ -29,13 +26,11 @@ X_train, y_train, X_test, y_test = get_Xy_tt(local = False)
 n_rounds = 500
 
 best_features = selected_features['features'][:4].values # four first chosen features from forward featurte selection.
-#best_features = selected_features['features'].values # four first chosen features from forward featurte selection.
 
 max_depth_list = [] # a bit redundent now, but hey.
 n_estimators_list = []
 min_samples_split_list = []
 criterion_list = []
-#class_weight_list = []
 max_features_list = []
 min_samples_leaf_list = []
 
@@ -57,9 +52,6 @@ BS_test_list = []
 pr_test_list = []
 roc_test_list = []
 
-W_feature0_list = []
-W_feature1_list = []
-
 print('Beginning loop')
 for i in range(n_rounds):
 
@@ -68,11 +60,6 @@ for i in range(n_rounds):
     min_samples_split = np.random.randint(4,7) # seems fine down here
     max_depth = np.random.randint(4,7)
     min_samples_leaf = np.random.randint(1,200)
-    #W_feature0 = (np.random.randint(1,10,1)*0.1)[0] #(np.random.randint(1,10,1)*0.1)[0] # value between 0.1 and 1 # wierd that his should be largest according to your tests
-    #W_feature1 = (np.random.randint(1,10,1)*0.1)[0] #(np.random.randint(1,10,1)*0.1)[0] # and wierd that this should be smallest..
-    #W_feature0 = (np.random.randint(2,11,1)*0.1)[0] # uniform from 0.2-1. prob could be justone number but where's the fun in that..
-    #W_feature1 = W_feature0 * 0.52 + np.random.randn() * 0.01 # function with a bit of random noise
-    #class_weight = {0:W_feature0, 1:W_feature1} 
     
     criterion = ['gini', 'entropy'][np.random.randint(0,2)] # bianry: one or the other. Gini just did wastly better
     max_features = ['auto', 'sqrt', 'log2'][np.random.randint(0,3)]
@@ -113,9 +100,6 @@ for i in range(n_rounds):
     pr_test_list.append((precision_test, recall_test))
     roc_test_list.append((fpr_test, tpr_test))
 
-    W_feature0_list.append(W_feature0) # just for plottting
-    W_feature1_list.append(W_feature1)
-    
     train_preds.append(y_train_pred)
     test_preds.append(y_test_pred)
 
@@ -126,13 +110,9 @@ for i in range(n_rounds):
     criterion_list.append(criterion)
     max_features_list.append(max_features)
     min_samples_leaf_list.append(min_samples_leaf)
-    #class_weight_list.append(class_weight)
-    #W_feature0_list.append(W_feature0) # just for plottting
-    #W_feature1_list.append(W_feature1)
 
 
     print(f'{i+1}/{n_rounds} done. AP test: {AP_test_list[i]}, AP train: {AP_train_list[i]}', end='\r')
-
 
 
 hp_df = pd.DataFrame({'n_estimators' : n_estimators_list, 'max_depth' : max_depth_list, 'min_samples_split' : min_samples_split_list,
