@@ -1,6 +1,5 @@
-# To add a new cell, type '# %%'
-# To add a new markdown cell, type '# %% [markdown]'
-# %%
+print('importing libs...', end = '\r')
+
 import os
 import numpy as np
 import pandas as pd
@@ -20,7 +19,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import RandomForestRegressor
 from sklearn import metrics
 
-# get df:
+print('Getting data', end = '\r')
 #pkl_file = open('/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/rf_selected_features.pkl', 'rb')
 pkl_file = open('/home/projects/ku_00017/data/generated/currents/rf_selected_features.pkl', 'rb')
 selected_features = pickle.load(pkl_file)
@@ -83,7 +82,7 @@ for i in range(n_rounds):
 
 
 
-    print(f'defining model {i+1}/{n_rounds}...  \nn_estimators: {n_estimators}, \nmin_sample_split: {min_sample_split}, \nmax_depth : {max_depth}, \nmin_sample_leaf : {min_sample_leaf}, \ncriterion : {criterion}, \nmax_features : {max_features} ')
+    print(f'defining model {i+1}/{n_rounds}...  \nn_estimators: {n_estimators}, \nmin_samples_split: {min_samples_split}, \nmax_depth : {max_depth}, \nmin_sample_leaf : {min_samples_leaf}, \ncriterion : {criterion}, \nmax_features : {max_features} ')
 
 
     model = RandomForestRegressor( n_estimators=n_estimators, criterion = criterion, max_depth = max_depth, 
