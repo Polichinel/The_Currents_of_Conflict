@@ -81,16 +81,16 @@ for i in range(n_rounds):
     max_features = ['auto', 'sqrt', 'log2'][np.random.randint(0,3)]
 
 
-    print(f'defining model...', end = '\r')
+    print(f'defining model {i+1}/{n_rounds}...', end = '\r')
     model = RandomForestRegressor( n_estimators=n_estimators, criterion = criterion, max_depth = max_depth, 
                                    min_samples_split= min_samples_split, min_samples_leaf= min_samples_leaf,
                                    random_state=i, n_jobs= 18)
     
-    print(f'fitting model...', end = '\r')
+    print(f'fitting model {i+1}/{n_rounds}...', end = '\r')
     model.fit(X_train[best_features], y_train)
 
     # metrics
-    print(f'getting metrics...', end = '\r')
+    print(f'getting metrics from model {i+1}/{n_rounds}...', end = '\r')
     y_train_pred_con = model.predict(X_train[best_features])
     y_test_pred_con = model.predict(X_test[best_features])
 
@@ -101,8 +101,8 @@ for i in range(n_rounds):
     y_test_bi = (y_test > 0)*1
 
     # train:
-    MSE_train = metrics.mean_squared_error(y_train, y_train_pred_con)
-    MAE_train = metrics.mean_absolute_error(y_train, y_train_pred_con)
+    MSE_train_list.append(metrics.mean_squared_error(y_train, y_train_pred_con))
+    MAE_train.append(metrics.mean_absolute_error(y_train, y_train_pred_con))
     
     AUC_train_list.append(metrics.roc_auc_score(y_train_bi, y_train_pred_prob))
     AP_train_list.append(metrics.average_precision_score(y_train_bi, y_train_pred_prob))
@@ -115,8 +115,8 @@ for i in range(n_rounds):
     roc_train_list.append((fpr_train, tpr_train))
 
     # test:
-    MSE_test = metrics.mean_squared_error(y_test, y_test_pred_con)
-    MAE_test = metrics.mean_absolute_error(y_test, y_test_pred_con)
+    MSE_test.append(metrics.mean_squared_error(y_test, y_test_pred_con))
+    MAE_test.append(metrics.mean_absolute_error(y_test, y_test_pred_con))
     
     AUC_test_list.append(metrics.roc_auc_score(y_test_bi, y_test_pred_prob))
     AP_test_list.append(metrics.average_precision_score(y_test_bi, y_test_pred_prob))
