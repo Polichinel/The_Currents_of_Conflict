@@ -73,11 +73,11 @@ for i in range(n_rounds):
     # Variable hyper parameters
     n_estimators = np.random.randint(100,150) # just to check if it is running at all...
     min_samples_split = np.random.randint(2,11) # seems fine down here
-    max_depth = np.random.randint(2,11)
+    max_depth = np.random.randint(5,11)
     min_samples_leaf = np.random.randint(1,200)
     
-    # criterion = ['mse', 'mae'][np.random.randint(0,2)] # maybe mae will run now with log(y)
-    criterion ='mse'
+    criterion = ['mse', 'mae'][np.random.randint(0,2)] # maybe mae will run now with log(y)
+    #criterion ='mse'
     max_features = ['auto', 'sqrt', 'log2'][np.random.randint(0,3)]
 
 
