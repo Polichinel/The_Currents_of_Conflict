@@ -19,7 +19,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import RandomForestRegressor
 from sklearn import metrics
 
-print('Getting data', end = '\r')
+print('Getting data......', end = '\r')
 #pkl_file = open('/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/rf_selected_features.pkl', 'rb')
 pkl_file = open('/home/projects/ku_00017/data/generated/currents/rf_selected_features.pkl', 'rb')
 selected_features = pickle.load(pkl_file)
@@ -76,10 +76,9 @@ for i in range(n_rounds):
     max_depth = np.random.randint(2,11)
     min_samples_leaf = np.random.randint(1,200)
     
-    criterion = ['mse', 'mae'][np.random.randint(0,2)]
-    #max_features = ['auto', 'sqrt', 'log2'][np.random.randint(0,3)]
-    max_features = ['auto', 'log2'][np.random.randint(0,2)]
-
+    # criterion = ['mse', 'mae'][np.random.randint(0,2)]
+    criterion ='mse'
+    max_features = ['auto', 'sqrt', 'log2'][np.random.randint(0,3)]
 
 
     print(f'defining model {i+1}/{n_rounds}...  \nn_estimators: {n_estimators}, \nmin_samples_split: {min_samples_split}, \nmax_depth : {max_depth}, \nmin_sample_leaf : {min_samples_leaf}, \ncriterion : {criterion}, \nmax_features : {max_features} ')
