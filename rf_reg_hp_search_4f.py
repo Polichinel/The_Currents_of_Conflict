@@ -28,7 +28,7 @@ pkl_file.close()
 X_train, y_train, X_test, y_test = get_Xy_tt(local = False, binary_y= False)
 n_rounds = 50
 
-best_features = selected_features['features'][:9].values # should have specific feature selection for reg... also try with 4..
+best_features = selected_features['features'][:4].values # should have specific feature selection for reg... also try with 4..
 
 # hp lists:
 max_depth_list = [] 
