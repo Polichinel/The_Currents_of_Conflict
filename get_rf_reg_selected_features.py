@@ -47,14 +47,14 @@ for j in range(n_feat): # set 4 for test
         print(f'train: {MSE_train_list[i]}, test: {MSE_val_list[i]}\n')
 
     df_temp = pd.DataFrame({'x': x_list, 'AP': MSE_val_list})
-    chosen_features.append(df_temp.sort_values('AP', ascending= False).iloc[0]['x'])
-    chosen_features_MSE.append(df_temp.sort_values('AP', ascending= False).iloc[0]['AP'])
+    chosen_features.append(df_temp.sort_values('AP', ascending= True).iloc[0]['x'])
+    chosen_features_MSE.append(df_temp.sort_values('AP', ascending= True).iloc[0]['MSE'])
 
-    print(f'round {j+1}/{n_feat}. choosenfeatures: {chosen_features} w/ AP: {chosen_features_MSE[j]}\n\n')
+    print(f'round {j+1}/{n_feat}. choosenfeatures: {chosen_features} w/ MSE: {chosen_features_MSE[j]}\n\n')
 
     # the break sould be here somewhere...
 
-selected_features = pd.DataFrame({'features' : chosen_features, 'AP' : chosen_features_MSE})
+selected_features = pd.DataFrame({'features' : chosen_features, 'MSE' : chosen_features_MSE})
 
 print('Pickling..')
 new_file_name = '/home/projects/ku_00017/data/generated/currents/rf_reg_selected_features.pkl'
