@@ -41,8 +41,8 @@ for j in range(n_feat): # set 4 for test
         y_val_pred = model_tmp.predict(X_test[X_temp])
 
         x_list.append(x)
-        MSE_train_list.append(metrics.average_precision_score(y_train, y_train_pred))
-        MSE_val_list.append(metrics.average_precision_score(y_test, y_val_pred))
+        MSE_train_list.append(metrics.mean_squared_error(y_train, y_train_pred))
+        MSE_val_list.append(metrics.mean_squared_error(y_test, y_val_pred))
 
         print(f'train: {MSE_train_list[i]}, test: {MSE_val_list[i]}\n')
 
