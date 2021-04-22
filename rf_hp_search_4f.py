@@ -66,8 +66,10 @@ for i in range(n_rounds):
     # Variable hyper parameters
     n_estimators = np.random.randint(100,150) # performanece seem to drop after 150 which is a bit stange but fine.
     min_samples_split = np.random.randint(4,7) # seems fine down here
-    max_depth = np.random.randint(4,7)
-    min_samples_leaf = np.random.randint(1,200)
+    #max_depth = np.random.randint(4,7)
+    max_depth = np.random.randint(5,8)
+    #min_samples_leaf = np.random.randint(1,200)
+    min_samples_leaf = np.random.randint(1,100)
     #W_feature0 = (np.random.randint(1,10,1)*0.1)[0] #(np.random.randint(1,10,1)*0.1)[0] # value between 0.1 and 1 # wierd that his should be largest according to your tests
     #W_feature1 = (np.random.randint(1,10,1)*0.1)[0] #(np.random.randint(1,10,1)*0.1)[0] # and wierd that this should be smallest..
     #W_feature0 = (np.random.randint(2,11,1)*0.1)[0] # uniform from 0.2-1. prob could be justone number but where's the fun in that..
