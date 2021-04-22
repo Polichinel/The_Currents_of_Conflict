@@ -50,4 +50,9 @@ def get_Xy_tt(local = False, binary_y = True):
 
     return(X_train, y_train, X_test, y_test)
 
-    
+
+def my_sigmoid(x):
+    s = 1/(1+np.e**(-x))
+    return(s)
+
+
