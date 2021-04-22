@@ -26,7 +26,7 @@ selected_features = pickle.load(pkl_file)
 pkl_file.close()
 
 X_train, y_train, X_test, y_test = get_Xy_tt(local = False, binary_y= False)
-n_rounds = 500
+n_rounds = 50
 
 best_features = selected_features['features'][:9].values # should have specific feature selection for reg...
 
@@ -71,12 +71,12 @@ print('Beginning loop')
 for i in range(n_rounds):
 
     # Variable hyper parameters
-    n_estimators = np.random.randint(5,10) # just to check if it is running at all...
+    n_estimators = np.random.randint(100,150) # just to check if it is running at all...
     min_samples_split = np.random.randint(2,11) # seems fine down here
     max_depth = np.random.randint(2,11)
     min_samples_leaf = np.random.randint(1,200)
     
-    # criterion = ['mse', 'mae'][np.random.randint(0,2)]
+    # criterion = ['mse', 'mae'][np.random.randint(0,2)] # maybe mae will run now with log(y)
     criterion ='mse'
     max_features = ['auto', 'sqrt', 'log2'][np.random.randint(0,3)]
 
