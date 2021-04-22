@@ -28,7 +28,7 @@ pkl_file.close()
 X_train, y_train, X_test, y_test = get_Xy_tt(local = False, binary_y= False)
 n_rounds = 50
 
-best_features = selected_features['features'][:9].values # should have specific feature selection for reg...
+best_features = selected_features['features'][:9].values # should have specific feature selection for reg... also try with 4..
 
 # hp lists:
 max_depth_list = [] 
@@ -76,8 +76,8 @@ for i in range(n_rounds):
     max_depth = np.random.randint(5,11)
     min_samples_leaf = np.random.randint(1,200)
     
-    criterion = ['mse', 'mae'][np.random.randint(0,2)] # maybe mae will run now with log(y)
-    #criterion ='mse'
+    #criterion = ['mse', 'mae'][np.random.randint(0,2)] # mae still not run now with log(y)
+    criterion ='mse'
     max_features = ['auto', 'sqrt', 'log2'][np.random.randint(0,3)]
 
 
