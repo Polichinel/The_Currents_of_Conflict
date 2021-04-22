@@ -33,7 +33,7 @@ for j in range(n_feat): # set 4 for test
 
         print(f'{i+1}/{n_i}, Running with: {X_temp}')
 
-        model_tmp = RandomForestRegressor(n_estimators=100, criterion = 'MSE', max_depth = 9, min_samples_split = 10, min_samples_leaf= 100, random_state=42, n_jobs= 18) # HP from quick naive search
+        model_tmp = RandomForestRegressor(n_estimators=100, criterion = 'mse', max_depth = 9, min_samples_split = 10, min_samples_leaf= 100, random_state=42, n_jobs= 18) # HP from quick naive search
 
         model_tmp.fit(X_train[X_temp], y_train)
 
