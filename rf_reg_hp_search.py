@@ -72,21 +72,25 @@ print('Beginning loop')
 for i in range(n_rounds):
 
     # Variable hyper parameters
-    n_estimators = np.random.randint(100,150) # performanece seem to drop after 150 which is a bit stange but fine.
+    n_estimators = np.random.randint(5,10) # just to check if it is running at all...
     min_samples_split = np.random.randint(2,11) # seems fine down here
     max_depth = np.random.randint(2,11)
     min_samples_leaf = np.random.randint(1,200)
     
     criterion = ['mse', 'mae'][np.random.randint(0,2)]
     max_features = ['auto', 'sqrt', 'log2'][np.random.randint(0,3)]
-    
+
+
+    print(f'defining model...', end = '\r')
     model = RandomForestRegressor( n_estimators=n_estimators, criterion = criterion, max_depth = max_depth, 
                                    min_samples_split= min_samples_split, min_samples_leaf= min_samples_leaf,
                                    random_state=i, n_jobs= 18)
     
+    print(f'fitting model...', end = '\r')
     model.fit(X_train[best_features], y_train)
 
     # metrics
+    print(f'getting metrics...', end = '\r')
     y_train_pred_con = model.predict(X_train[best_features])[:,1]
     y_test_pred_con = model.predict(X_test[best_features])[:,1]
 
@@ -137,14 +141,11 @@ for i in range(n_rounds):
     max_features_list.append(max_features)
     min_samples_leaf_list.append(min_samples_leaf)
 
-    string = f'{i+1}/{n_rounds} \n' \
-             f'done. MSE test: {MSE_test_list[i]} MSE train: {MSE_train_list[i]} \n' \
-             f'done. MAE test: {MAE_test_list[i]} MAE train: {MAE_train_list[i]} \n' \
-             f'AP test: {AP_test_list[i]}, AP train: {AP_train_list[i]} \n'
-
-    print(string , end='\r')
+    loop_string = f'{i+1}/{n_rounds} \n done. MSE test: {MSE_test_list[i]} MSE train: {MSE_train_list[i]} \n MAE test: {MAE_test_list[i]} MAE train: {MAE_train_list[i]} \n AP test: {AP_test_list[i]}, AP train: {AP_train_list[i]} \n'
+    print(loop_string , end='\r')
 
 
+print('Making datafame', end = '\r')
 hp_df = pd.DataFrame({'n_estimators' : n_estimators_list, 'max_depth' : max_depth_list, 'min_samples_split' : min_samples_split_list,
                       'min_samples_leaf' : min_samples_leaf_list ,'criterion' : criterion_list, 'max_features' : max_features_list,  
                       'test_preds_con' : test_preds_con, 'test_preds_prob' : test_preds_prob,
