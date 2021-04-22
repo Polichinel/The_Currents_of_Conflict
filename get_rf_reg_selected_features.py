@@ -46,7 +46,7 @@ for j in range(n_feat): # set 4 for test
 
         print(f'train: {MSE_train_list[i]}, test: {MSE_val_list[i]}\n')
 
-    df_temp = pd.DataFrame({'x': x_list, 'AP': MSE_val_list})
+    df_temp = pd.DataFrame({'x': x_list, 'MSE': MSE_val_list})
     chosen_features.append(df_temp.sort_values('AP', ascending= True).iloc[0]['x'])
     chosen_features_MSE.append(df_temp.sort_values('AP', ascending= True).iloc[0]['MSE'])
 
