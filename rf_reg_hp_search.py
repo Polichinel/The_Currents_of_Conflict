@@ -91,8 +91,8 @@ for i in range(n_rounds):
 
     # metrics
     print(f'getting metrics...', end = '\r')
-    y_train_pred_con = model.predict(X_train[best_features])[:,1]
-    y_test_pred_con = model.predict(X_test[best_features])[:,1]
+    y_train_pred_con = model.predict(X_train[best_features])
+    y_test_pred_con = model.predict(X_test[best_features])
 
     y_train_pred_prob = my_sigmoid(y_train_pred_con) # maybe do a logistic regression instead...
     y_test_pred_prob = my_sigmoid(y_test_pred_con) # maybe do a logistic regression instead...
