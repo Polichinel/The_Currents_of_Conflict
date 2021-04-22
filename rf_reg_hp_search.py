@@ -78,12 +78,14 @@ for i in range(n_rounds):
     min_samples_leaf = np.random.randint(1,200)
     
     criterion = ['mse', 'mae'][np.random.randint(0,2)]
-    #max_features = ['auto', 'sqrt', 'log2'][np.random.randint(0,3)]
-    max_features = ['auto', 'log2'][np.random.randint(0,2)]
+    max_features = ['auto', 'sqrt', 'log2'][np.random.randint(0,3)]
+    #max_features = ['auto', 'log2'][np.random.randint(0,2)]
 
 
 
-    print(f'defining model {i+1}/{n_rounds}...', end = '\r')
+    print(f'defining model {i+1}/{n_rounds}...  \nn_estimators: {n_estimators}, \nmin_sample_split: {min_sample_split}, \nmax_depth : {max_depth}, \nmin_sample_leaf : {min_sample_leaf}, \ncriterion : {criterion}, \nmax_features : {max_features} ')
+
+
     model = RandomForestRegressor( n_estimators=n_estimators, criterion = criterion, max_depth = max_depth, 
                                    min_samples_split= min_samples_split, min_samples_leaf= min_samples_leaf,
                                    random_state=i, n_jobs= 18)
