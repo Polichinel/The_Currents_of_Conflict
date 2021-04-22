@@ -5,7 +5,7 @@ import pandas as pd
 import pickle
 
 
-def get_Xy_tt(local = False):
+def get_Xy_tt(local = False, binary_y = True):
     
     # get df:
     
@@ -29,12 +29,19 @@ def get_Xy_tt(local = False):
 
 
     X_train = df_merged[df_merged['train'] == 1][feature_set] 
-        
-    y_train = (df_merged[df_merged['train'] == 1]['ged_best_sb'] > 0) * 1
+    X_test = df_merged[df_merged['train'] == 0][feature_set] # val, not test       
+ 
+    if binary_y == True:
 
-    X_test = df_merged[df_merged['train'] == 0][feature_set] # val, not test
+        y_train = (df_merged[df_merged['train'] == 1]['ged_best_sb'] > 0) * 1
+        y_test = df_merged[df_merged['train'] == 0]['ged_best_sb'] # val, not test
 
-    y_test = (df_merged[df_merged['train'] == 0]['ged_best_sb'] > 0) * 1 # val, not test
+    elif binary_y == False:
+
+        y_train = (df_merged[df_merged['train'] == 1]['ged_best_sb'] > 0)
+        y_test = df_merged[df_merged['train'] == 0]['ged_best_sb'] # val, not test
+
+       
 
     print(f'X_train: {X_train.shape}')
     print(f'y_train: {y_train.shape}')
