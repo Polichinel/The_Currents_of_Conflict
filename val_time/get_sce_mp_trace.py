@@ -83,15 +83,23 @@ with pm.Model() as model:
 
         y_ = gp.marginal_likelihood(f"y_{i}", X=X, Xu = Xu, y=y, noise= σ)
 
-    mp = pm.find_MAP()
-print('Got mp')
+    #mp = pm.find_MAP()
+    trace = pm.sample(draws=500, tune=10, progressbar=True, random_seed=42, discard_tuned_samples=True, chains=5, target_accept=0.96, return_inferencedata=False) # just a test
 
+mp_trace = pm.summary(trace)
+print('Got trace summary')
 
 print('Pickling..')
-new_file_name = '/home/projects/ku_00017/data/generated/currents/sce_mp.pkl'
-#new_file_name = '/home/simon/Documents/Articles/conflict_prediction/data/ViEWS/sce_mp.pkl'
+new_file_name = '/home/projects/ku_00017/data/generated/currents/sce_mp_trace.pkl'
 output = open(new_file_name, 'wb')
-pickle.dump(mp, output)
+pickle.dump(mp_trace, output)
+output.close()
+
+#maybe it works... 
+print('Pickling..')
+new_file_name = '/home/projects/ku_00017/data/generated/currents/sce_trace.pkl'
+output = open(new_file_name, 'wb')
+pickle.dump(trace, output)
 output.close()
 
 # end timer
