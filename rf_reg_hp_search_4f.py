@@ -156,8 +156,8 @@ hp_df = pd.DataFrame({'n_estimators' : n_estimators_list, 'max_depth' : max_dept
 
 
 print('Pickling..')
-new_file_name = '/home/projects/ku_00017/data/generated/currents/rf_reg_hp_df.pkl'
-#new_file_name = '/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/rf_reg_hp_df.pkl'
+new_file_name = '/home/projects/ku_00017/data/generated/currents/rf_reg_hp_4f_df.pkl'
+#new_file_name = '/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/rf_reg_hp_4f_df.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(hp_df, output)
 output.close()

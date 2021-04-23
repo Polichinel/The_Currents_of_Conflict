@@ -1,6 +1,3 @@
-# To add a new cell, type '# %%'
-# To add a new markdown cell, type '# %% [markdown]'
-# %%
 import os
 import numpy as np
 import pandas as pd
@@ -30,15 +27,13 @@ n_rounds = 500
 
 best_features = selected_features['features'][:4].values # four first chosen features from forward featurte selection.
 
-max_depth_list = [] # a bit redundent now, but hey.
 n_estimators_list = []
 min_samples_split_list = []
+max_depth_list = []
 criterion_list = []
-#class_weight_list = []
 max_features_list = []
 min_samples_leaf_list = []
 
-# see https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html for more.
 
 train_preds = []
 test_preds = []
@@ -57,17 +52,15 @@ BS_test_list = []
 pr_test_list = []
 roc_test_list = []
 
-#W_feature0_list = []
-#W_feature1_list = []
-
 print('Beginning loop')
 for i in range(n_rounds):
 
     # Variable hyper parameters
-    n_estimators = np.random.randint(100,150) # performanece seem to drop after 150 which is a bit stange but fine.
+    # n_estimators = np.random.randint(100,150) # performanece seem to drop after 150 which is a bit stange but fine.
+    n_estimators = np.random.randint(120,150) # performanece seem to drop after 150 which is a bit stange but fine.
     min_samples_split = np.random.randint(4,7) # seems fine down here
     #max_depth = np.random.randint(4,7)
-    max_depth = np.random.randint(5,11)
+    max_depth = np.random.randint(5,8) # maybe it should just be 5,7 og just 5...
     #min_samples_leaf = np.random.randint(1,200)
     min_samples_leaf = np.random.randint(1,100)
     #W_feature0 = (np.random.randint(1,10,1)*0.1)[0] #(np.random.randint(1,10,1)*0.1)[0] # value between 0.1 and 1 # wierd that his should be largest according to your tests
@@ -76,7 +69,7 @@ for i in range(n_rounds):
     #W_feature1 = W_feature0 * 0.52 + np.random.randn() * 0.01 # function with a bit of random noise
     #class_weight = {0:W_feature0, 1:W_feature1} 
     
-    criterion = ['gini', 'entropy'][np.random.randint(0,2)] # bianry: one or the other. Gini just did wastly better
+    criterion = ['gini', 'entropy'][np.random.randint(0,2)] 
     max_features = ['auto', 'sqrt', 'log2'][np.random.randint(0,3)]
     
     model = RandomForestClassifier( n_estimators=n_estimators, criterion = criterion, max_depth = max_depth, 
@@ -119,9 +112,6 @@ for i in range(n_rounds):
     criterion_list.append(criterion)
     max_features_list.append(max_features)
     min_samples_leaf_list.append(min_samples_leaf)
-    #class_weight_list.append(class_weight)
-    #W_feature0_list.append(W_feature0) # just for plottting
-    #W_feature1_list.append(W_feature1)
     
     print(f'{i+1}/{n_rounds} done. AP test: {AP_test_list[i]}, AP train: {AP_train_list[i]}', end='\r')
 
