@@ -101,14 +101,23 @@ with pm.Model() as model:
         y_ = gp.marginal_likelihood(f'y_{i}', X=X, y=y, noise= σ)
     
     # find mp. Should be trace later.
-    mp = pm.find_MAP()
+    #mp = pm.find_MAP()
+    trace = pm.sample(draws=1000, tune=1000, progressbar=True, random_seed=42, discard_tuned_samples=True, chains=5, target_accept=0.95)
 
-print('Got mp')
+mp_trace = pm.summary(trace)
+print('Got trace summary')
 
 print('Pickling..')
-new_file_name = '/home/projects/ku_00017/data/generated/currents/cm_mp.pkl'
+new_file_name = '/home/projects/ku_00017/data/generated/currents/cm_mp_trace.pkl'
 output = open(new_file_name, 'wb')
-pickle.dump(mp, output)
+pickle.dump(mp_trace, output)
+output.close()
+
+#maybe it works... 
+print('Pickling..')
+new_file_name = '/home/projects/ku_00017/data/generated/currents/cm_trace.pkl'
+output = open(new_file_name, 'wb')
+pickle.dump(trace, output)
 output.close()
 
 # end timer
