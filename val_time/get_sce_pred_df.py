@@ -59,7 +59,6 @@ nnz = 60
 # conflict type.
 conf_type = 'ged_best_sb'
 
-
 print(f'{nnz}_{conf_type}')
 
 # given new results it might actually be two trend...
@@ -79,9 +78,6 @@ with pm.Model() as model:
     # GP
     gp = pm.gp.MarginalSparse(mean_func=mean ,cov_func=cov)
  
-    # always prudent
-    #df_sorted = df.sort_values(['pg_id', 'month_id'])
-
     #shared
     coord_len = df.groupby(['xcoord', 'ycoord']).sum().shape[0]
     y = theano.shared(np.zeros(coord_len), 'y')

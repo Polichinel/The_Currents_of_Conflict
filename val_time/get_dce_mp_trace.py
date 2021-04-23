@@ -15,6 +15,8 @@ from utils_dce import test_val_train
 from utils_dce import sample_conflict_timeline
 from utils_dce import get_hyper_priors
 from utils_dce import predict
+from utils_dce import get_mse
+from utils_dce import get_metrics
 
 import pymc3 as pm
 import theano
@@ -53,17 +55,17 @@ df.rename(columns =  {'mu' : 'sce_mu', 'var': 'sce_var'}, inplace=True)
 out_dict = {}
 
 # minimum number of conf in timeslines predicted. C = 0 for full run
-C_pred = 0
+C_pred = 1#0
 
 # minimum number of conf in one year in timeslines used to est hyper parameters
 C_est = 8 # 8
 
 # conflict type. Som might need lower c_est than 100 to work
 # so now this should be sce_mu - so you do not need to take log.
-conf_type = 'sce_mu' #['ged_best_sb', 'ged_best_ns', 'ged_best_os', 'ged_best']
+conf_type = 'sce_mu'
 
 # short term kernel
-s_kernel = 'Matern32' #['ExpQuad', 'RatQuad', 'Matern32'] #, 'Matern52']
+s_kernel = 'Matern32'
 
 # Start timer
 start_time = time.time()
@@ -74,11 +76,6 @@ train_id, val_id = test_val_train(df, test_time= False)
 
 print(f"{C_est}_{C_pred}_{conf_type}_{s_kernel}\n")
 
-# get pkl mp
-path = open('/home/projects/ku_00017/data/generated/currents/dce_mp.pkl', 'rb')
-dce_mp = pickle.load(path)
-path.close()
-print(f"got mp: ℓ_l:{dce_mp['ℓ_l']}, η_l:{dce_mp['η_l']}, ℓ_s:{dce_mp['ℓ_s']}, η_s:{dce_mp['η_s']}, σ:{dce_mp['σ']}")
 
 # Constuction the gps and getting the map
 hps = get_hyper_priors() # these might need some changing... 
@@ -93,12 +90,11 @@ with pm.Model() as model:
     # mean func for short term trend
     mean_s =  pm.gp.mean.Zero()
 
-    # cov function for short term trend
+    # cov short term trend
     cov_s = η_s ** 2 * pm.gp.cov.Matern32(1, ℓ_s) 
 
     # GP short term trend 
     gp_s = pm.gp.Marginal(mean_func = mean_s, cov_func=cov_s)
-
 
     # long term trend -------------------------------------------------
     ℓ_l = pm.Gamma("ℓ_l", alpha=hps['ℓ_alpha_l'] , beta=hps['ℓ_beta_l'])
@@ -137,22 +133,14 @@ with pm.Model() as model:
 
         y_ = gp.marginal_likelihood(f'y_{i}', X=X, y=y, noise= σ)
     
+    mp = pm.find_MAP()
 
-# Getting the predictions and merging with original df:
-# might be a problem here.. both with log and conf_type. Check utils
-df_new = predict(conf_type = conf_type, df = df, train_id = train_id, test_id = val_id, mp = dce_mp, gp = gp, gp_s = gp_s, gp_l = gp_l, σ=σ, C=C_pred)
+print('Got mp')
 
-dce_pred_df = pd.merge(df_new, df[['id', 'pg_id','year','gwcode', 'xcoord', 'ycoord','ged_best_sb']], how = 'left', on = ['id', 'pg_id'])
-
-dce_pred_df.rename(columns =  {'mu' : 'dce_mu', 'var': 'dce_var', 
-                             'mu_s' : 'dce_mu_s', 'var_s': 'dce_var_s', 
-                             'mu_l' : 'dce_mu_l', 'var_l': 'dce_var_l'}, inplace=True)
-
-
-print('Pickling...')
-new_file_name = '/home/projects/ku_00017/data/generated/currents/dce_pred_df.pkl'
+print('Pickling..')
+new_file_name = '/home/projects/ku_00017/data/generated/currents/dce_mp.pkl'
 output = open(new_file_name, 'wb')
-pickle.dump(dce_pred_df, output)
+pickle.dump(mp, output)
 output.close()
 
 # end timer
@@ -160,8 +148,3 @@ final_time = time.time()
 final_run_time = final_time - start_time
 string = f'Run for {final_run_time/60:.3} minutes'
 print(string)
-
-
-
-
-
