@@ -17,17 +17,11 @@ def get_views_coord(path, file_name):
 
     return(views_coord)
 
-
-
 def test_val_train(df, info = True, test_time = False):
 
     """For train, validation and test. In accordance with Hegre et al. 2019 p. 163"""
 
-    #Train: jan 1990 = month_id 121 (12) - dec 2011 = month_id 384 (275)
-    #Val: jan 2012 = month_id 385 (276)- dec 2014 = month_id 420 (311) # hvorfor kun 35? 
-    #Test: jan 2015 = month_id 421 (312) - dec 2017 = month_id 456 (347) # hvorfor kun 35?
-
-    df_sorted = df.sort_values('month_id') # actually might be better to just sort after id.
+    df_sorted = df.sort_values('month_id')
 
     if test_time == False:
 
@@ -115,13 +109,6 @@ def sample_conflict_timeline(conf_type, df, train_id, test_id, C=12):
     elif conf_type == 'ged_best':
         dummy = 'ged_dummy'
 
-    # sort the df - just in case
-    df_sorted = df.sort_values(['pg_id', 'month_id'])
-
-    # groupby gids and get total events
-    #df_sb_total_events = df.groupby(['pg_id']).sum()[dummy].reset_index().rename(columns = {dummy:'ged_total_events'})
-     #sample_pr_id = df_sb_total_events[df_sb_total_events['ged_total_events'] >= C]['pg_id'].unique()
-   
     df_sum = df.groupby(['pg_id', 'year']).sum()[[dummy]].reset_index()
     sample_pr_id = df_sum[df_sum[dummy] >= C]['pg_id'].unique()
 
