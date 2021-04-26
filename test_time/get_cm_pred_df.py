@@ -39,11 +39,11 @@ df = get_views_coord(path = path, file_name = file_name)
 print('Got df')
 
 # get train and validation id:
-train_id, val_id = test_val_train(df, test_time = False)
+train_id, val_id = test_val_train(df, test_time = True)
 print('Got train/val ids')
 
 # get pkl mp
-path = open('/home/projects/ku_00017/data/generated/currents/cm_mp.pkl', 'rb')
+path = open('/home/projects/ku_00017/data/generated/currents/cm_mp_tt.pkl', 'rb')
 cm_mp = pickle.load(path)
 path.close()
 print(f"got mp: ℓ_l:{cm_mp['ℓ_l']}, η_l:{cm_mp['η_l']}, ℓ_s:{cm_mp['ℓ_s']}, η_s:{cm_mp['η_s']}, σ:{cm_mp['σ']}")
@@ -111,7 +111,7 @@ print('\nBegins prediction...')
 cm_pred_df = predict(conf_type = conf_type, df = df, train_id = train_id, test_id = val_id, mp = cm_mp, gp = gp, gp_s = gp_s, gp_l = gp_l, σ=σ, C=C_pred)
 
 print('Pickling...')
-new_file_name = '/home/projects/ku_00017/data/generated/currents/cm_pred_df.pkl'
+new_file_name = '/home/projects/ku_00017/data/generated/currents/cm_pred_df_tt.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(cm_pred_df, output)
 output.close()
