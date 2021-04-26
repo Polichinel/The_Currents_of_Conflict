@@ -15,8 +15,6 @@ from utils_dce import test_val_train
 from utils_dce import sample_conflict_timeline
 from utils_dce import get_hyper_priors
 from utils_dce import predict
-from utils_dce import get_mse
-from utils_dce import get_metrics
 
 import pymc3 as pm
 import theano
@@ -30,7 +28,7 @@ warnings.simplefilter("ignore", UserWarning)
 
 # get df:
 #pkl_file = open('/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/sce_pred_df.pkl', 'rb')
-pkl_file = open('/home/projects/ku_00017/data/generated/currents/sce_pred_df.pkl' , 'rb')
+pkl_file = open('/home/projects/ku_00017/data/generated/currents/sce_pred_df_tt.pkl' , 'rb')
 sce_pred_df = pickle.load(pkl_file)
 pkl_file.close()
 
@@ -72,12 +70,12 @@ start_time = time.time()
 
 # So, here is the thing. you only have trian in df_merge right now....
 # get train and validation id:
-train_id, val_id = test_val_train(df, test_time= False)
+train_id, val_id = test_val_train(df, test_time= True) # TEST TIME!
 
 print(f"{C_est}_{C_pred}_{conf_type}_{s_kernel}\n")
 
 # get pkl mp
-path = open('/home/projects/ku_00017/data/generated/currents/dce_mp.pkl', 'rb')
+path = open('/home/projects/ku_00017/data/generated/currents/dce_mp_tt.pkl', 'rb')
 dce_mp = pickle.load(path)
 path.close()
 print(f"got mp: ℓ_l:{dce_mp['ℓ_l']}, η_l:{dce_mp['η_l']}, ℓ_s:{dce_mp['ℓ_s']}, η_s:{dce_mp['η_s']}, σ:{dce_mp['σ']}")
@@ -152,7 +150,7 @@ dce_pred_df.rename(columns =  {'mu' : 'dce_mu', 'var': 'dce_var',
 
 
 print('Pickling...')
-new_file_name = '/home/projects/ku_00017/data/generated/currents/dce_pred_df.pkl'
+new_file_name = '/home/projects/ku_00017/data/generated/currents/dce_pred_df_tt.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(dce_pred_df, output)
 output.close()

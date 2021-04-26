@@ -27,7 +27,7 @@ df = get_views_coord(path = path, file_name = file_name)
 print('Got df')
 
 # get train and validation id:
-train_id, val_id = test_val_train(df, test_time= False)
+train_id, val_id = test_val_train(df, test_time = True) # TEST TIME!
 print("Got train/val index")
 
 # Constuction the gps and getting the map
@@ -106,7 +106,7 @@ with pm.Model() as model:
 print('Got mp')
 
 print('Pickling..')
-new_file_name = '/home/projects/ku_00017/data/generated/currents/cm_mp.pkl'
+new_file_name = '/home/projects/ku_00017/data/generated/currents/cm_mp_tt.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(mp, output)
 output.close()

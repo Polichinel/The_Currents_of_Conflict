@@ -30,12 +30,12 @@ df = get_views_coord(path = path, file_name = file_name)
 print('got df')
 
 # get trian/test id
-train_id, val_id = test_val_train(df, test_time = False)
+train_id, val_id = test_val_train(df, test_time = True) # TEST TIME
 print('got split')
 
 # get pkl mp
 #path = open('/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/sce_mp.pkl', 'rb')
-path = open('/home/projects/ku_00017/data/generated/currents/sce_mp.pkl', 'rb')
+path = open('/home/projects/ku_00017/data/generated/currents/sce_mp_tt.pkl', 'rb')
 sce_mp = pickle.load(path)
 path.close()
 print(f"got mp: ℓ:{sce_mp['ℓ']}, η:{sce_mp['η']}, σ:{sce_mp['σ']}")
@@ -59,7 +59,6 @@ nnz = 60
 # conflict type.
 conf_type = 'ged_best_sb'
 
-
 print(f'{nnz}_{conf_type}')
 
 # given new results it might actually be two trend...
@@ -79,9 +78,6 @@ with pm.Model() as model:
     # GP
     gp = pm.gp.MarginalSparse(mean_func=mean ,cov_func=cov)
  
-    # always prudent
-    #df_sorted = df.sort_values(['pg_id', 'month_id'])
-
     #shared
     coord_len = df.groupby(['xcoord', 'ycoord']).sum().shape[0]
     y = theano.shared(np.zeros(coord_len), 'y')
@@ -123,8 +119,8 @@ log_best_col = np.array(log_best_list).reshape(-1,)
 sce_pred_df = pd.DataFrame({'mu': mu_col, 'var':  var_col, 'month_id': month_col, 'xcoord': xcoord_col, 'ycoord': ycoord_col, 'log_best': log_best_col})
 
 print('Pickling..')
-new_file_name = '/home/projects/ku_00017/data/generated/currents/sce_pred_df.pkl'
-#new_file_name = '/home/simon/Documents/Articles/conflict_prediction/data/ViEWS/sce_pred_df.pkl'
+new_file_name = '/home/projects/ku_00017/data/generated/currents/sce_pred_df_tt.pkl'
+#new_file_name = '/home/simon/Documents/Articles/conflict_prediction/data/ViEWS/sce_pred_df_tt.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(sce_pred_df, output)
 output.close()

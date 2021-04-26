@@ -18,16 +18,11 @@ def get_views_coord(path, file_name):
     return(views_coord)
 
 
-
 def test_val_train(df, info = True, test_time = False):
 
     """For train, validation and test. In accordance with Hegre et al. 2019 p. 163"""
 
-    #Train: jan 1990 = month_id 121 (12) - dec 2011 = month_id 384 (275)
-    #Val: jan 2012 = month_id 385 (276)- dec 2014 = month_id 420 (311) # hvorfor kun 35? 
-    #Test: jan 2015 = month_id 421 (312) - dec 2017 = month_id 456 (347) # hvorfor kun 35?
-
-    df_sorted = df.sort_values('month_id') # actually might be better to just sort after id.
+    df_sorted = df.sort_values('month_id')
 
     if test_time == False:
 
@@ -116,12 +111,6 @@ def sample_conflict_timeline(conf_type, df, train_id, test_id, C=12):
         dummy = 'ged_dummy'
 
     # sort the df - just in case
-    df_sorted = df.sort_values(['pg_id', 'month_id'])
-
-    # groupby gids and get total events
-    #df_sb_total_events = df.groupby(['pg_id']).sum()[dummy].reset_index().rename(columns = {dummy:'ged_total_events'})
-     #sample_pr_id = df_sb_total_events[df_sb_total_events['ged_total_events'] >= C]['pg_id'].unique()
-   
     df_sum = df.groupby(['pg_id', 'year']).sum()[[dummy]].reset_index()
     sample_pr_id = df_sum[df_sum[dummy] >= C]['pg_id'].unique()
 
@@ -168,16 +157,15 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C):
 
     new_id = np.append(train_id, test_id)
     df_sorted = df.sort_values(['pg_id', 'month_id'])
-    X_new = df_sorted[df_sorted['id'].isin(new_id) ]['month_id'].unique()[:,None] # all X
+    X_new = df_sorted[df_sorted['id'].isin(new_id) ]['month_id'].unique()[:,None] 
 
     sample_pg_id = sample_conflict_timeline(conf_type = conf_type, df = df, train_id = train_id, test_id = test_id, C = C)
 
-    train_len = df_sorted[df_sorted['id'].isin(train_id)]['month_id'].unique().shape[0]#test
-    test_len = df_sorted[df_sorted['id'].isin(test_id)]['month_id'].unique().shape[0]#test
+    train_len = df_sorted[df_sorted['id'].isin(train_id)]['month_id'].unique().shape[0]
+    test_len = df_sorted[df_sorted['id'].isin(test_id)]['month_id'].unique().shape[0]
     
-    # try without shared....
-    X = theano.shared(np.zeros(train_len)[:,None], 'X')#test
-    y = theano.shared(np.zeros(train_len), 'y')#test
+    X = theano.shared(np.zeros(train_len)[:,None], 'X')
+    y = theano.shared(np.zeros(train_len), 'y')
 
     # make lists
     mu_list = []
@@ -200,8 +188,6 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C):
         idx = df_sorted[(df_sorted['id'].isin(new_id)) & (df_sorted['pg_id'] == j)]['id'].values
         y_new = np.log(df_sorted[(df_sorted['id'].isin(new_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values
 
-        #X = df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None]
-        #y = np.log(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values
         X.set_value(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)]['month_id'].values[:,None])
         y.set_value(np.log(df_sorted[(df_sorted['id'].isin(train_id)) & (df_sorted['pg_id'] == j)][conf_type] + 1).values)
 

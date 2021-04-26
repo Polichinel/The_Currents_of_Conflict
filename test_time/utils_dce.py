@@ -2,12 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 import pymc3 as pm
-from sklearn.metrics import mean_squared_error
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import mean_squared_error
-from sklearn import metrics
 import theano
-from IPython.display import clear_output
 
 import pickle
 
@@ -25,16 +20,11 @@ def get_views_coord(path, file_name):
     return(views_coord)
 
 
-
 def test_val_train(df, info = True, test_time = False):
 
     """For train, validation and test. In accordance with Hegre et al. 2019 p. 163"""
 
-    #Train: jan 1990 = month_id 121 (12) - dec 2011 = month_id 384 (275)
-    #Val: jan 2012 = month_id 385 (276)- dec 2014 = month_id 420 (311) # hvorfor kun 35? 
-    #Test: jan 2015 = month_id 421 (312) - dec 2017 = month_id 456 (347) # hvorfor kun 35?
-
-    df_sorted = df.sort_values('month_id') # actually might be better to just sort after id.
+    df_sorted = df.sort_values('month_id') 
 
     if test_time == False:
 
@@ -115,10 +105,6 @@ def sample_conflict_timeline(conf_type, df, train_id, test_id, C=12):
 
     # sort the df - just in case
     df_sorted = df.sort_values(['pg_id', 'month_id'])
-
-    # groupby gids and get total events
-    #df_sb_total_events = df.groupby(['pg_id']).sum()[dummy].reset_index().rename(columns = {dummy:'ged_total_events'})
-     #sample_pr_id = df_sb_total_events[df_sb_total_events['ged_total_events'] >= C]['pg_id'].unique()
    
     df_sum = df_sorted.groupby(['pg_id', 'year']).sum()[[dummy]].reset_index()
     sample_pr_id = df_sum[df_sum[dummy] >= C]['pg_id'].unique()
@@ -236,118 +222,3 @@ def predict(conf_type, df, train_id, test_id, mp, gp, gp_s, gp_l, σ, C, indv_me
                             }) #  'y' : y_new_col ,
 
     return(df_new)
-
-
-# This here just vectorize it!
-def get_mse(df_merged, train_id, test_id):
-
-    """This funciton takes a merged df, the train ids and val/test ids. 
-    The df should be a merger between the original df and the new-df from 'predict'.
-    The funciton outputs a df containing the in/out mse for the gp, gp_s and gp_l."""
-
-    # iterate over time lines - we would like a distribution of mse
-
-    y_true_train = df_merged[df_merged['id'].isin(train_id)]['ged_best_sb']
-    pred_train = df_merged[df_merged['id'].isin(train_id)]['dce_mu']
-    pred_s_train = df_merged[df_merged['id'].isin(train_id)]['dce_mu_s']
-    pred_l_train = df_merged[df_merged['id'].isin(train_id)]['dce_mu_l']
-
-    mse_train = mean_squared_error(y_true_train, pred_train)
-    mse_s_train = mean_squared_error(y_true_train, pred_s_train)
-    mse_l_train = mean_squared_error(y_true_train, pred_l_train)
-
-    y_true_test = df_merged[df_merged['id'].isin(test_id)]['ged_best_sb']
-    pred_test = df_merged[df_merged['id'].isin(test_id)]['dce_mu']
-    pred_s_test = df_merged[df_merged['id'].isin(test_id)]['dce_mu_s']
-    pred_l_test = df_merged[df_merged['id'].isin(test_id)]['dce_mu_l']
-
-    mse_test = mean_squared_error(y_true_test, pred_test)
-    mse_s_test = mean_squared_error(y_true_test, pred_s_test)
-    mse_l_test = mean_squared_error(y_true_test, pred_l_test)
-
-    mse_resutls_df = pd.DataFrame({
-            "Gps": ["Full", "Short", "long"],
-            "MSE insample (mean)": [mse_train, mse_s_train, mse_l_train],
-            "MSE outsample (mean)": [mse_test, mse_s_test, mse_l_test],
-            })
-
-    return(mse_resutls_df)
-
-
-
-# make sure you can use -1 cores..
-def get_metrics(df_merged, train_id, test_id):
-
-    """A function that takes the merged df.
-    The df must now include both data from 'predict',
-    and the devrived slope, acc ans mass.
-    The function uses a simple rf classifier to test the temporal features.
-    Very simple classifier so results are only indicative"""
-
-    # the cm_pred_df:
-    pkl_file = open('/home/projects/ku_00017/data/generated/currents/cm_pred_df.pkl', 'rb')
-    cm_pred_df = pickle.load(pkl_file)
-    pkl_file.close()
-
-    cm_pred_df.rename(columns =  {'mu' : 'cm_mu', 'var': 'cm_var', 
-                                  'mu_s' : 'cm_mu_s', 'var_s': 'cm_var_s', 
-                                  'mu_l' : 'cm_mu_l', 'var_l': 'cm_var_l'}, inplace=True)
-
-
-    cm_pred_df.sort_values(['pg_id', 'X'], inplace= True)
-    cm_pred_df['cm_mu_slope'] = cm_pred_df.groupby('pg_id')['cm_mu'].transform(np.gradient)
-    cm_pred_df['cm_mu_acc'] = cm_pred_df.groupby('pg_id')['cm_mu_slope'].transform(np.gradient)
-    cm_pred_df['cm_mu_mass'] = cm_pred_df.groupby('pg_id')['cm_mu'].transform(np.cumsum)
-
-    cm_pred_df['cm_mu_s_slope'] = cm_pred_df.groupby('pg_id')['cm_mu_s'].transform(np.gradient)
-    cm_pred_df['cm_mu_s_acc'] = cm_pred_df.groupby('pg_id')['cm_mu_s_slope'].transform(np.gradient)
-    cm_pred_df['cm_mu_s_mass'] = cm_pred_df.groupby('pg_id')['cm_mu_s'].transform(np.cumsum)
-
-    cm_pred_df['cm_mu_l_slope'] = cm_pred_df.groupby('pg_id')['cm_mu_l'].transform(np.gradient)
-    cm_pred_df['cm_mu_l_acc'] = cm_pred_df.groupby('pg_id')['cm_mu_l_slope'].transform(np.gradient)
-    cm_pred_df['cm_mu_l_mass'] = cm_pred_df.groupby('pg_id')['cm_mu_l'].transform(np.cumsum)
-
-    # some merge.
-    df_merged2 = pd.merge(df_merged, cm_pred_df, how = 'left', on = ['id', 'pg_id'])
-
-    feature_set = ['dce_mu', 'dce_mu_slope', 'dce_mu_acc', 'dce_mu_mass',
-                   'dce_mu_s', 'dce_mu_s_slope','dce_mu_s_acc', 'dce_mu_s_mass',
-                   'dce_mu_l', 'dce_mu_l_slope', 'dce_mu_l_acc', 'dce_mu_l_mass',
-                   'dce_var', 'dce_var_s', 'dce_var_l', 
-                   'cm_mu', 'cm_mu_slope', 'cm_mu_acc', 'cm_mu_mass',
-                   'cm_mu_s', 'cm_mu_s_slope', 'cm_mu_s_acc', 'cm_mu_s_mass',
-                   'cm_mu_l', 'cm_mu_l_slope', 'cm_mu_l_acc', 'cm_mu_l_mass',
-                   'cm_var', 'cm_var_s', 'cm_var_l']
-
-    X_train = df_merged2[df_merged2['id'].isin(train_id)][feature_set] 
-    
-    y_train = (df_merged2[df_merged2['id'].isin(train_id)]['ged_best_sb'] > 0) * 1
-
-    X_test = df_merged2[df_merged2['id'].isin(test_id)][feature_set]
-
-    y_test = (df_merged2[df_merged2['id'].isin(test_id)]['ged_best_sb'] > 0) * 1
-
-
-    # totally vanilla - just indicative
-    model = RandomForestClassifier(n_estimators=64, max_depth=6, min_samples_split=8, random_state=42, n_jobs= -1)
-
-    model.fit(X_train, y_train)
-
-    y_train_pred = model.predict_proba(X_train)[:,1]
-    y_test_pred = model.predict_proba(X_test)[:,1]
-
-    AUC_train = metrics.roc_auc_score(y_train, y_train_pred)
-    AP_train = metrics.average_precision_score(y_train, y_train_pred)
-    BS_train = metrics.brier_score_loss(y_train, y_train_pred)
-
-    AUC_test = metrics.roc_auc_score(y_test, y_test_pred)
-    AP_test = metrics.average_precision_score(y_test, y_test_pred)
-    BS_test = metrics.brier_score_loss(y_test, y_test_pred)
-
-    df_results =  pd.DataFrame({
-            "Metrics": ["AUC", "AP", "BS"],
-            "Train": [AUC_train, AP_train, BS_train],
-            "Test": [AUC_test, AP_test, BS_test]
-        })
-
-    return(df_results)

@@ -30,7 +30,7 @@ warnings.simplefilter("ignore", UserWarning)
 
 # get df:
 #pkl_file = open('/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/sce_pred_df.pkl', 'rb')
-pkl_file = open('/home/projects/ku_00017/data/generated/currents/sce_pred_df.pkl' , 'rb')
+pkl_file = open('/home/projects/ku_00017/data/generated/currents/sce_pred_df_tt.pkl' , 'rb')
 sce_pred_df = pickle.load(pkl_file)
 pkl_file.close()
 
@@ -72,7 +72,7 @@ start_time = time.time()
 
 # So, here is the thing. you only have trian in df_merge right now....
 # get train and validation id:
-train_id, val_id = test_val_train(df, test_time= False)
+train_id, val_id = test_val_train(df, test_time= True) # TEST TIME!
 
 print(f"{C_est}_{C_pred}_{conf_type}_{s_kernel}\n")
 
@@ -138,7 +138,7 @@ with pm.Model() as model:
 print('Got mp')
 
 print('Pickling..')
-new_file_name = '/home/projects/ku_00017/data/generated/currents/dce_mp.pkl'
+new_file_name = '/home/projects/ku_00017/data/generated/currents/dce_mp_tt.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(mp, output)
 output.close()
