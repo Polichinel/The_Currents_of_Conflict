@@ -29,7 +29,7 @@ print('Got df')
 
 # get train and validation id:
 train_id, val_id = test_val_train(df, test_time= True) # TEST TIME!
-print("Got train/val index")
+print("Got train/test index")
 
 # Constuction the gps and getting the map
 η_beta, ℓ_beta, ℓ_alpha, σ_beta = get_spatial_hps(plot = False)
