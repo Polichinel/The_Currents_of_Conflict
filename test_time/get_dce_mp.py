@@ -7,23 +7,15 @@ import seaborn as sns
 import pickle
 import time
 
-from IPython.display import clear_output
-
 # some prob need fitting now... 
 from utils_dce import get_views_coord
 from utils_dce import test_val_train
 from utils_dce import sample_conflict_timeline
 from utils_dce import get_hyper_priors
 from utils_dce import predict
-from utils_dce import get_mse
-from utils_dce import get_metrics
 
 import pymc3 as pm
 import theano
-
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import mean_squared_error
-from sklearn import metrics
 
 import warnings
 warnings.simplefilter("ignore", UserWarning)
