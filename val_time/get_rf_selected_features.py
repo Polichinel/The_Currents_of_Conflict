@@ -34,7 +34,7 @@ for j in range(n_feat): # set 4 for test
         print(f'{i+1}/{n_i}, Running with: {X_temp}')
 
         #model_tmp = RandomForestClassifier(n_estimators=128, criterion = 'gini', max_depth = 6, min_samples_split = 4, random_state=42, n_jobs= 18) # HP from quick naive search
-        model_tmp = RandomForestClassifier(n_estimators=128, criterion = 'entorpy', max_depth = 5, min_samples_split = 6, random_state=42, n_jobs= -1) # HP from quick naive search
+        model_tmp = RandomForestClassifier(n_estimators=128, criterion = 'entropy', max_depth = 5, min_samples_split = 6, random_state=42, n_jobs= -1) # HP from quick naive search
 
         model_tmp.fit(X_train[X_temp], y_train)
 
