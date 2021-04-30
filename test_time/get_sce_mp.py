@@ -29,7 +29,7 @@ print('Got df')
 
 # get train and validation id:
 train_id, val_id = test_val_train(df, test_time= True) # TEST TIME!
-print("Got train/val index")
+print("Got train/test index")
 
 # Constuction the gps and getting the map
 η_beta, ℓ_beta, ℓ_alpha, σ_beta = get_spatial_hps(plot = False)
@@ -60,7 +60,7 @@ with pm.Model() as model:
     mean =  pm.gp.mean.Zero()
 
     # GP
-    gp = pm.gp.MarginalSparse(mean_func=mean ,cov_func=cov)
+    gp = pm.gp.MarginalSparse(mean_func=mean ,cov_func=cov, approx="FITC")
  
     #shared
     coord_len = df.groupby(['xcoord', 'ycoord']).sum().shape[0]
@@ -83,6 +83,8 @@ with pm.Model() as model:
 
         y_ = gp.marginal_likelihood(f"y_{i}", X=X, Xu = Xu, y=y, noise= σ)
 
+
+    print('finding MAP....')
     mp = pm.find_MAP()
 print('Got mp')
 
