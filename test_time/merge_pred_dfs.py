@@ -6,7 +6,7 @@ import pickle
 # why not also get the coords from ViEWS here?
 
 # get dce_pred_df:
-#pkl_file = open('/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/dce_pred_df.pkl', 'rb')
+#pkl_file = open('/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/dce_pred_df_tt.pkl', 'rb')
 pkl_file = open('/home/projects/ku_00017/data/generated/currents/dce_pred_df_tt.pkl', 'rb')
 dce_pred_df = pickle.load(pkl_file)
 pkl_file.close()
@@ -26,7 +26,7 @@ dce_pred_df['dce_mu_l_acc'] = dce_pred_df.groupby('pg_id')['dce_mu_l_slope'].tra
 dce_pred_df['dce_mu_l_mass'] = dce_pred_df.groupby('pg_id')['dce_mu_l'].transform(np.cumsum)
 
 # get cm_pred_df:
-#pkl_file = open('/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/cm_pred_df.pkl', 'rb')
+#pkl_file = open('/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/cm_pred_df_tt.pkl', 'rb')
 pkl_file = open('/home/projects/ku_00017/data/generated/currents/cm_pred_df_tt.pkl', 'rb')
 cm_pred_df = pickle.load(pkl_file)
 pkl_file.close()
@@ -53,7 +53,7 @@ df_merged = pd.merge(dce_pred_df, cm_pred_df, how = 'left', on = ['id', 'pg_id',
 
 
 print('Pickling..')
-#new_file_name = '/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/preds_df.pkl'
+#new_file_name = '/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/preds_df_tt.pkl'
 new_file_name = '/home/projects/ku_00017/data/generated/currents/preds_df_tt.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(df_merged, output)
