@@ -101,7 +101,7 @@ with pm.Model() as model:
         y_ = gp.marginal_likelihood(f'y_{i}', X=X, y=y, noise= σ)
     
     #mp = pm.find_MAP()
-    trace = pm.sample(draws=100, tune=100, progressbar=True, random_seed=42, discard_tuned_samples=True, chains=3, cores=30, target_accept=0.96, return_inferencedata=False) # just a test
+    trace = pm.sample(draws=1000, tune=100, progressbar=True, random_seed=42, discard_tuned_samples=True, chains=4, cores=40, target_accept=0.96, return_inferencedata=False) # just a test
 
 print('Getting summary....')
 with model:
