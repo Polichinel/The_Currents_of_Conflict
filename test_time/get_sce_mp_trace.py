@@ -84,7 +84,7 @@ with pm.Model() as model:
         y_ = gp.marginal_likelihood(f"y_{i}", X=X, Xu = Xu, y=y, noise= σ)
 
     #mp = pm.find_MAP()
-    trace = pm.sample(draws=500, tune=100, progressbar=True, random_seed=42, discard_tuned_samples=True, chains=3, cores=30, target_accept=0.96, return_inferencedata=False) # just a test
+    trace = pm.sample(draws=1000, tune=100, progressbar=True, random_seed=42, discard_tuned_samples=True, chains=4, cores=40, target_accept=0.96, return_inferencedata=False) # just a test
 
 mp_trace = pm.summary(trace)
 print('Got trace summary')
@@ -95,11 +95,17 @@ output = open(new_file_name, 'wb')
 pickle.dump(mp_trace, output)
 output.close()
 
-#maybe it works... 
-print('Pickling..')
-new_file_name = '/home/projects/ku_00017/data/generated/currents/sce_trace_tt.pkl'
+print('Creating anad pickling sample dict...')
+sample_dict = {}
+with model:
+    for i in pm.summary(trace).index: 
+        print(i)
+        sample_dict[i] = trace[i]
+
+print('Pickling sample dict.............')
+new_file_name = '/home/projects/ku_00017/data/generated/currents/dce_sample_dict_tt.pkl'
 output = open(new_file_name, 'wb')
-pickle.dump(trace, output)
+pickle.dump(sample_dict, output)
 output.close()
 
 # end timer
