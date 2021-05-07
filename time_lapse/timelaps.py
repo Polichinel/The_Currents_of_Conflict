@@ -55,9 +55,14 @@ for i, j in enumerate(df['X'].unique()):
     plt.yticks([])
     plt.colorbar()
 
-    # save 
-    fig_path = f'/home/simon/Documents/Articles/conflict_prediction/JPR_RNR/the_currents_of_conflict/plots/timelapse_plots/plot{i}_m{j}.jpg'
+    # save
+    no = f'0000{i}'[-3:] # hack
+    fig_path = f'/home/simon/Documents/Articles/conflict_prediction/JPR_RNR/the_currents_of_conflict/plots/timelapse_plots/plot_{no}.jpg'
     plt.savefig(fig_path, bbox_inches = "tight")
+    
+    plt.close(fig=None)
+    #plt.cla()
+    #plt.clf()
 
     print(f"{i+1}/{df['X'].unique().shape[0]} done....", end='\r')
 
