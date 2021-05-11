@@ -63,10 +63,10 @@ with pm.Model() as model:
     gp = pm.gp.MarginalSparse(mean_func=mean ,cov_func=cov)
  
     #shared
-    #coord_len = df.groupby(['xcoord', 'ycoord']).sum().shape[0]
-    #y = theano.shared(np.zeros(coord_len), 'y')
-    #X = theano.shared(np.zeros([coord_len, 2]), 'X')
-    #Xu = theano.shared(np.zeros([nnz, 2]), 'Xu')
+    coord_len = df.groupby(['xcoord', 'ycoord']).sum().shape[0]
+    y = theano.shared(np.zeros(coord_len), 'y')
+    X = theano.shared(np.zeros([coord_len, 2]), 'X')
+    Xu = theano.shared(np.zeros([nnz, 2]), 'Xu')
 
     # loop
     month_ids = df[df['id'].isin(train_id)]['month_id'].unique()
@@ -75,13 +75,13 @@ with pm.Model() as model:
     for i, j in enumerate(month_ids):
         print(f'{i+1}/{n} (estimation)', end='\r')       
 
-        #y.set_value(np.log(df[(df['id'].isin(train_id)) & (df['month_id'] == j)]['ged_best_sb'].values + 1))
-        #X.set_value(df[(df['id'].isin(train_id))  & (df['month_id'] == j)][['xcoord','ycoord']].values)
-        #Xu.set_value(df[df['month_id'] == j].sort_values('ged_best_sb', ascending = False)[:nnz][['xcoord','ycoord']].values) 
+        y.set_value(np.log(df[(df['id'].isin(train_id)) & (df['month_id'] == j)]['ged_best_sb'].values + 1))
+        X.set_value(df[(df['id'].isin(train_id))  & (df['month_id'] == j)][['xcoord','ycoord']].values)
+        Xu.set_value(df[df['month_id'] == j].sort_values('ged_best_sb', ascending = False)[:nnz][['xcoord','ycoord']].values) 
 
-        y = np.log(df[(df['id'].isin(train_id)) & (df['month_id'] == j)]['ged_best_sb'].values + 1)
-        X = df[(df['id'].isin(train_id))  & (df['month_id'] == j)][['xcoord','ycoord']].values
-        Xu = df[df['month_id'] == j].sort_values('ged_best_sb', ascending = False)[:nnz][['xcoord','ycoord']].values
+        #y = np.log(df[(df['id'].isin(train_id)) & (df['month_id'] == j)]['ged_best_sb'].values + 1)
+        #X = df[(df['id'].isin(train_id))  & (df['month_id'] == j)][['xcoord','ycoord']].values
+        #Xu = df[df['month_id'] == j].sort_values('ged_best_sb', ascending = False)[:nnz][['xcoord','ycoord']].values
 
         y_ = gp.marginal_likelihood(f"y_{i}", X=X, Xu = Xu, y=y, noise= σ)
 
@@ -107,7 +107,7 @@ with model:
         sample_dict[i] = trace[i]
 
 print('Pickling sample dict.............')
-new_file_name = '/home/projects/ku_00017/data/generated/currents/dce_sample_dict_tt.pkl'
+new_file_name = '/home/projects/ku_00017/data/generated/currents/sce_sample_dict_tt.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(sample_dict, output)
 output.close()
