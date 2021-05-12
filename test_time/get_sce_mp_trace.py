@@ -86,7 +86,7 @@ with pm.Model() as model:
         y_ = gp.marginal_likelihood(f"y_{i}", X=X, Xu = Xu, y=y, noise= σ)
 
     #mp = pm.find_MAP()
-    trace = pm.sample(draws=5, tune=5, progressbar=True, random_seed=42, discard_tuned_samples=True, chains=10, cores=40, target_accept=0.98, return_inferencedata=False) # just a test
+    trace = pm.sample(draws=100, tune=50, progressbar=True, random_seed=42, discard_tuned_samples=True, chains=10, cores=40, target_accept=0.98, return_inferencedata=False) # just a test
 
 print('Trace created')
 
