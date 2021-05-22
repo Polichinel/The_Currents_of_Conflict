@@ -127,8 +127,8 @@ log_best_col = np.array(log_best_list).reshape(-1,)
 sce_pred_df = pd.DataFrame({'mu': mu_col, 'var':  var_col, 'month_id': month_col, 'xcoord': xcoord_col, 'ycoord': ycoord_col, 'log_best': log_best_col})
 
 print('Pickling..')
-new_file_name = '/home/projects/ku_00017/data/generated/currents/sce_pred_df_tt.pkl'
-#new_file_name = '/home/simon/Documents/Articles/conflict_prediction/data/ViEWS/sce_pred_df_tt.pkl'
+new_file_name = '/home/projects/ku_00017/data/generated/currents/sce_trace_pred_df_tt.pkl'
+#new_file_name = '/home/simon/Documents/Articles/conflict_prediction/data/ViEWS/sce_trace_pred_df_tt.pkl'
 output = open(new_file_name, 'wb')
 pickle.dump(sce_pred_df, output)
 output.close()
