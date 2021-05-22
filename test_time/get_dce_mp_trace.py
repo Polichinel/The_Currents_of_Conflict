@@ -27,8 +27,8 @@ import warnings
 warnings.simplefilter("ignore", UserWarning)
 
 # get df:
-#pkl_file = open('/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/sce_pred_df.pkl', 'rb')
-pkl_file = open('/home/projects/ku_00017/data/generated/currents/sce_pred_df_tt.pkl' , 'rb')
+#pkl_file = open('/home/simon/Documents/Articles/conflict_prediction/data/computerome/currents/sce_trace_pred_df.pkl', 'rb')
+pkl_file = open('/home/projects/ku_00017/data/generated/currents/sce_trace_pred_df_tt.pkl' , 'rb')
 sce_pred_df = pickle.load(pkl_file)
 pkl_file.close()
 
